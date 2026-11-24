@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="{{LANG}}"{{PLATFORM_ATTR}}>
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>{{screen.title}} · {{NAME}}</title>
+  <link rel="stylesheet" href="styles/tokens.css">
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="app.css">
+  <script src="styles/params.js"></script>
+  <script src="fixtures.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M4.5 10.5L12 4l7.5 6.5V20h-5v-5.5h-5V20h-5z"/></symbol>
+    <symbol id="i-list" viewBox="0 0 24 24"><path d="M9 6.5h10.5M9 12h10.5M9 17.5h10.5M4.5 6.5h.01M4.5 12h.01M4.5 17.5h.01"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M5 20V11M12 20V5M19 20v-6"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M4 13.5L6.5 6h11l2.5 7.5V19H4z"/><path d="M4 13.5h4.5l1 2h5l1-2H20"/></symbol>
+    <symbol id="i-x-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5l5 5M14.5 9.5l-5 5"/></symbol>
+  </svg>
+
+  <div class="app" data-screen-id="{{SLUG}}">
+    <aside class="app__sidebar">
+      <div class="app__brand">{{NAME}}</div>
+      <nav class="nav" aria-label="{{nav.label}}">
+        <a class="nav__item" href="#main" aria-current="page"><svg class="icon" aria-hidden="true"><use href="#i-home"/></svg>{{nav.item-1}}</a>
+        <a class="nav__item" href="#main"><svg class="icon" aria-hidden="true"><use href="#i-list"/></svg>{{nav.item-2}}</a>
+        <a class="nav__item" href="#main"><svg class="icon" aria-hidden="true"><use href="#i-chart"/></svg>{{nav.item-3}}</a>
+        <a class="nav__item" href="#main"><svg class="icon" aria-hidden="true"><use href="#i-sliders"/></svg>{{nav.item-4}}</a>
+      </nav>
+    </aside>
+
+    <header class="app__header">
+      <h1 class="app__title">{{screen.title}}</h1>
+      <div class="app__actions">
+        <button type="button" class="btn btn--primary" data-go="loading -> ready"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>{{action.primary}}</button>
+      </div>
+    </header>
+
+    <main class="app__main" id="main" tabindex="-1">
+      <section data-state-view="ready" aria-labelledby="ready-title">
+        <h2 class="visually-hidden" id="ready-title">{{screen.title}}</h2>
+        <div class="stack" id="ready-content">
+          <p>{{ready.content}}</p>
+        </div>
+      </section>
+
+      <section data-state-view="loading" hidden aria-busy="true">
+        <p class="visually-hidden" role="status">{{loading.label}}</p>
+        <div class="stack" style="--stack-gap: var(--space-3)" aria-hidden="true">
+          <span class="skeleton" style="width: 40%; height: 1.5rem"></span>
+          <span class="skeleton" style="width: 100%; height: 3rem"></span>
+          <span class="skeleton" style="width: 100%; height: 3rem"></span>
+          <span class="skeleton" style="width: 70%; height: 3rem"></span>
+        </div>
+      </section>
+
+      <section data-state-view="empty" hidden>
+        <div class="empty">
+          <div class="empty__icon"><svg class="icon" aria-hidden="true"><use href="#i-inbox"/></svg></div>
+          <h2 class="empty__title">{{empty.title}}</h2>
+          <p class="empty__body">{{empty.body}}</p>
+          <div class="empty__actions"><button type="button" class="btn btn--primary" data-go="loading -> ready">{{empty.action}}</button></div>
+        </div>
+      </section>
+
+      <section data-state-view="error" hidden>
+        <div class="alert alert--danger" role="alert">
+          <svg class="icon" aria-hidden="true"><use href="#i-x-circle"/></svg>
+          <div><div class="alert__title">{{error.title}}</div><div class="alert__body">{{error.body}}</div></div>
+          <button type="button" class="btn btn--sm" data-go="loading -> ready">{{error.action}}</button>
+        </div>
+      </section>
+    </main>
+
+    <nav class="app__tabbar" aria-label="{{nav.label}}">
+      <a class="tabbar__item" href="#main" aria-current="page"><span class="tabbar__glyph"><svg class="icon" aria-hidden="true"><use href="#i-home"/></svg></span>{{nav.item-1}}</a>
+      <a class="tabbar__item" href="#main"><span class="tabbar__glyph"><svg class="icon" aria-hidden="true"><use href="#i-list"/></svg></span>{{nav.item-2}}</a>
+      <a class="tabbar__item" href="#main"><span class="tabbar__glyph"><svg class="icon" aria-hidden="true"><use href="#i-chart"/></svg></span>{{nav.item-3}}</a>
+    </nav>
+  </div>
+</body>
+</html>

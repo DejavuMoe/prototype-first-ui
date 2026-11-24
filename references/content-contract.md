@@ -1,7 +1,29 @@
 # Non-negotiable content contract
 
-This contract applies to every prototype and production surface governed by this
-skill. The task brief is design input, not product content.
+This contract applies to product UI and informs content review in other media.
+The task brief is design input, not automatically product content.
+
+## Standalone communication and system documentation
+
+For decks, reports, diagrams and design-system documentation, the requested subject
+may itself be architecture, audience, positioning, or design rationale. When the
+user asks to communicate that subject, it is legitimate artifact content. Distinguish
+that content from hidden agent instructions and incidental implementation notes.
+User-authorized drafting is allowed from supplied or evidenced facts; mark new
+copy as draft rather than claiming it was previously approved. Do not invent
+claims or alter legal wording. UI profiles and machine inventories below apply
+to product surfaces, not mandatory scaffolding for every visual artifact.
+
+## Scaffold slots
+
+`pfui.py init` leaves every user-facing string as a `{{slot}}`, except the
+product name given with `--name`, which goes into titles and brand areas and
+must therefore be the real product or brand name. Each slot is a content
+decision: fill it from current product terminology, evidenced behavior,
+explicitly supplied copy or an authoritative source, or remove the element.
+Never fill a slot from the brief. `pfui.py check` fails while slots remain.
+How the words read (specific verbs, one term per concept, case, errors) is
+covered in [design quality](design-quality.md#words-in-the-interface).
 
 ## Universal content firewall
 
@@ -55,7 +77,7 @@ approved.
 
 ## Content profiles
 
-Every project declares one profile in `docs/product/constraints.md` and
+Every product UI project declares one profile in `docs/product/constraints.md` and
 `ui-contract.json`.
 
 ### `operational-strict` — default for software product UI
@@ -198,11 +220,15 @@ python <skill-dir>/scripts/content_audit.py check \
   --inventory designs/my-app/content-inventory.json
 ```
 
-For provisional browserless review only:
+For provisional browserless review only (never final sign-off):
 
 ```sh
 python <skill-dir>/scripts/content_audit.py static-scan \
   --root designs/my-app --output static-content.json --include-code-strings
+python <skill-dir>/scripts/content_audit.py seed --capture static-content.json \
+  --profile operational-strict --output designs/my-app/content-inventory.json
+python <skill-dir>/scripts/content_audit.py check \
+  --inventory designs/my-app/content-inventory.json --allow-static
 ```
 
 ## Compact decision test

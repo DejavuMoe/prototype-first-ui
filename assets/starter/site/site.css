@@ -1,0 +1,84 @@
+/*
+ * Website layer: reading-first rhythm on top of the shared system.
+ * Hierarchy comes from type scale, spacing and alignment, not from boxes,
+ * gradients or decoration. Copy in every slot must come from approved sources.
+ */
+body.site {
+  background: var(--color-bg-surface);
+  font-size: var(--font-size-lg);
+  line-height: 1.6;
+}
+
+.site__skip {
+  position: absolute;
+  inset-inline-start: var(--space-4);
+  top: var(--space-4);
+  z-index: var(--z-tooltip);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  background: var(--color-bg-inverse);
+  color: var(--color-text-inverse);
+  transform: translateY(-200%);
+}
+.site__skip:focus-visible { transform: none; }
+
+.site__header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-sticky);
+  border-bottom: 1px solid var(--color-border-subtle);
+  background: var(--color-bg-surface);
+}
+.site__bar { display: flex; align-items: center; gap: var(--space-8); min-height: 64px; }
+.site__brand { color: var(--color-text-primary); font-weight: var(--font-weight-semibold); text-decoration: none; }
+.site__nav { display: flex; gap: var(--space-6); margin-inline-start: auto; font-size: var(--font-size-md); }
+.site__nav a { color: var(--color-text-secondary); text-decoration: none; }
+.site__nav a:hover { color: var(--color-text-primary); }
+
+.site__intro { padding-block: var(--space-24) var(--space-20); }
+.site__headline {
+  max-width: 18ch;
+  font-size: clamp(2.5rem, 3.2vw + 1.25rem, 4.25rem);
+  font-weight: var(--font-weight-semibold);
+  line-height: 1.04;
+  letter-spacing: -0.03em;
+  text-wrap: balance;
+}
+.site__lede { max-width: 52ch; margin-top: var(--space-6); color: var(--color-text-secondary); font-size: var(--font-size-xl); line-height: 1.55; }
+.site__actions { margin-top: var(--space-8); }
+
+.site__section { padding-block: var(--space-20); border-top: 1px solid var(--color-border-subtle); }
+.site__section--alt { background: var(--color-bg-canvas); }
+.site__heading {
+  max-width: 22ch;
+  margin-bottom: var(--space-10);
+  font-size: var(--font-size-4xl);
+  line-height: 1.15;
+  letter-spacing: var(--font-tracking-title);
+  text-wrap: balance;
+}
+.site__points { --grid-min: 15rem; --grid-gap: var(--space-10) var(--space-12); }
+.site__point { padding-top: var(--space-4); border-top: 2px solid var(--color-text-primary); }
+.site__point h3 { margin-bottom: var(--space-2); font-size: var(--font-size-xl); }
+.site__point p { color: var(--color-text-secondary); }
+
+.site__split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); align-items: center; gap: var(--space-16); }
+.site__media { margin: 0; }
+.site__media-frame { aspect-ratio: 4 / 3; border: 1px solid var(--color-border-default); border-radius: var(--radius-xl); background: var(--color-bg-sunken); }
+
+.site__closing { display: flex; flex-direction: column; align-items: flex-start; gap: var(--space-6); }
+.site__closing .site__heading { margin-bottom: 0; }
+.site__closing .site__lede { margin-top: 0; }
+
+.site__footer { padding-block: var(--space-10); border-top: 1px solid var(--color-border-subtle); color: var(--color-text-secondary); font-size: var(--font-size-sm); }
+.site__footer a { color: inherit; }
+
+.site__split .site__heading { margin-bottom: var(--space-4); }
+
+@media (max-width: 767px) {
+  .site__nav { display: none; }
+  .site__bar .btn { margin-inline-start: auto; }
+  .site__intro { padding-block: var(--space-16) var(--space-12); }
+  .site__section { padding-block: var(--space-12); }
+  .site__split { grid-template-columns: minmax(0, 1fr); gap: var(--space-8); }
+}

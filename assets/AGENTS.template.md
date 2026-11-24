@@ -8,6 +8,9 @@
 - Durable product/UX constraints: `docs/product/constraints.md`
 - Current UI capability audit: `docs/ui/capabilities.md` when present
 - Design project: `designs/{{PROJECT_SLUG}}/`
+- Shared design foundations: reuse the existing system, otherwise `designs/system/`
+- Skill installation: project-local `.agents/skills/prototype-first-ui/` or the
+  host's project-local equivalent; never a global/home installation
 
 ## Commands
 
@@ -22,6 +25,10 @@ Replace every placeholder with the repository's real commands:
 
 ## Prototype-first gate
 
+This gate applies to production UI changes. Standalone design systems, slides,
+documents, diagrams and charts use their own artifact checks without fabricated
+product routes or UI approval commits.
+
 - Every user-visible layout, copy, navigation, interaction, workflow, component
   state, dialog, menu, or information-hierarchy change follows the
   `prototype-first-ui` workflow.
@@ -33,6 +40,9 @@ Replace every placeholder with the repository's real commands:
   design project are visual and interaction truth. Explicitly approved copy is
   content truth.
 - Keep design-only and production implementation commits separate.
+- Record explicit approval in `design-review.json` and set the matching
+  `ui-contract.json` surface status to `approved`; include all reviewed local
+  dependencies in its prototype mappings before implementation.
 - Build success alone is not UI completion; run and compare the real product.
 
 ## Content firewall
@@ -53,9 +63,22 @@ Replace every placeholder with the repository's real commands:
 
 ## Visual and interaction defaults
 
-- Reuse the approved design system and current product terminology.
+- Reuse the approved design system and current product terminology. Components
+  use semantic tokens, never literal colors or one-off sizes.
 - Preserve keyboard, pointer, touch, context-menu, drag/drop, window, and native
-  conventions that apply to the product.
+  conventions that apply to the product and its platforms.
+- WCAG 2.2 AA in every supported theme: 4.5:1 text, 3:1 large text, control
+  boundaries and focus indicators; visible focus; targets at least 24px (44pt
+  iOS, 48dp Android); reduced motion honored.
+- Design every affected state (loading, empty, error, permission, offline, long
+  content), not only the happy path.
+
+## Before asking for review
+
+- Render every affected state at the target sizes and themes.
+- Run `python <skill>/scripts/pfui.py check designs/<project>` and fix errors.
+- Score the critique rubric in the skill's `references/design-quality.md`; no
+  blockers may remain. Report what could not be verified.
 
 ## Exceptions
 

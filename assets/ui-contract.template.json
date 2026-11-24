@@ -18,7 +18,7 @@
       "prototype": {
         "entry": "index.html",
         "assetPath": "index.html",
-        "files": [],
+        "files": ["index.html"],
         "states": [],
         "stableIds": []
       },

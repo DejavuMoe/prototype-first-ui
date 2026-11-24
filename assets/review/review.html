@@ -1,0 +1,306 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Review · prototype-first-ui</title>
+  <link rel="stylesheet" href="/__pfui/system/tokens.css">
+  <link rel="stylesheet" href="/__pfui/system/base.css">
+  <style>
+    body { height: 100dvh; display: grid; grid-template-rows: auto minmax(0, 1fr); background: var(--color-bg-sunken); }
+    .bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-2) var(--space-4);
+      padding: var(--space-2) var(--space-4);
+      border-bottom: 1px solid var(--color-border-default);
+      background: var(--color-bg-surface);
+      font-size: var(--font-size-sm);
+    }
+    .bar__group { display: flex; align-items: center; gap: var(--space-2); }
+    .bar__label { color: var(--color-text-secondary); }
+    .bar .select { width: auto; min-height: 32px; font-size: var(--font-size-sm); }
+    .bar .input { width: 5.5rem; min-height: 32px; font-size: var(--font-size-sm); }
+    .bar__spacer { flex: 1; }
+    .chips { display: flex; flex-wrap: wrap; gap: var(--space-1); }
+    .chip {
+      min-height: 28px;
+      padding: 0 var(--space-3);
+      border: 1px solid var(--color-border-default);
+      border-radius: var(--radius-full);
+      background: var(--color-bg-surface);
+      color: var(--color-text-secondary);
+      font-size: var(--font-size-sm);
+      cursor: pointer;
+    }
+    .chip:hover { color: var(--color-text-primary); border-color: var(--color-border-strong); }
+    .chip[aria-pressed="true"] { background: var(--color-accent-subtle); border-color: var(--color-accent-border); color: var(--color-accent-text); }
+    main { min-height: 0; display: grid; }
+    .stage { position: relative; display: grid; place-items: center; min-height: 0; overflow: hidden; padding: var(--space-6); }
+    .device { display: flex; flex-direction: column; gap: var(--space-2); align-items: center; }
+    .device__meta { color: var(--color-text-secondary); font-size: var(--font-size-xs); font-variant-numeric: tabular-nums; }
+    .device__frame { position: relative; overflow: hidden; border: 1px solid var(--color-border-strong); border-radius: var(--radius-md); background: var(--color-bg-surface); box-shadow: var(--shadow-lg); }
+    .device__frame iframe { display: block; border: 0; transform-origin: 0 0; background: var(--color-bg-surface); }
+    .sheet { min-height: 0; overflow: auto; padding: var(--space-6); }
+    .sheet__grid { display: flex; flex-direction: column; gap: var(--space-8); }
+    .sheet__row { display: flex; flex-wrap: wrap; align-items: flex-start; gap: var(--space-6); }
+    .cell { display: flex; flex-direction: column; gap: var(--space-2); flex: none; margin: 0; }
+    .cell__meta { display: flex; justify-content: space-between; gap: var(--space-2); color: var(--color-text-secondary); font-size: var(--font-size-xs); }
+    .cell__meta strong { color: var(--color-text-primary); font-weight: var(--font-weight-semibold); }
+    .cell__frame { position: relative; overflow: hidden; border: 1px solid var(--color-border-default); border-radius: var(--radius-md); background: var(--color-bg-surface); }
+    .cell__frame iframe { position: absolute; inset: 0 auto auto 0; border: 0; transform-origin: 0 0; pointer-events: none; }
+    .hint { color: var(--color-text-tertiary); font-size: var(--font-size-xs); }
+    .empty-note { max-width: 36rem; color: var(--color-text-secondary); text-align: center; }
+  </style>
+</head>
+<body>
+  <header class="bar">
+    <div class="bar__group">
+      <label class="bar__label" for="page">Page</label>
+      <select class="select" id="page"></select>
+    </div>
+    <div class="bar__group">
+      <span class="bar__label" id="states-label">State</span>
+      <div class="chips" id="states" role="group" aria-labelledby="states-label"></div>
+    </div>
+    <div class="bar__group">
+      <span class="bar__label" id="theme-label">Theme</span>
+      <div class="segmented" role="group" aria-labelledby="theme-label" id="theme">
+        <button type="button" class="segmented__item" data-value="system">System</button>
+        <button type="button" class="segmented__item" data-value="light">Light</button>
+        <button type="button" class="segmented__item" data-value="dark">Dark</button>
+      </div>
+    </div>
+    <div class="bar__group">
+      <label class="bar__label" for="platform">Platform</label>
+      <select class="select" id="platform">
+        <option value="">Page default</option>
+        <option value="web">Web</option>
+        <option value="desktop">Desktop</option>
+        <option value="ios">iOS</option>
+        <option value="android">Android</option>
+      </select>
+    </div>
+    <div class="bar__group">
+      <label class="bar__label" for="width">Width</label>
+      <select class="select" id="width">
+        <option value="fit">Fit</option>
+        <option value="360">360</option>
+        <option value="390">390</option>
+        <option value="768">768</option>
+        <option value="1024">1024</option>
+        <option value="1280">1280</option>
+        <option value="1440">1440</option>
+        <option value="1920">1920</option>
+      </select>
+    </div>
+    <div class="bar__spacer"></div>
+    <button type="button" class="btn btn--sm" id="sheet" aria-pressed="false">Sheet</button>
+    <a class="btn btn--sm btn--ghost" id="open" href="/" target="_blank" rel="noopener">Open page</a>
+    <span class="hint">[ ] state · t theme · s sheet</span>
+  </header>
+  <main id="main">
+    <div class="stage" id="single">
+      <div class="device">
+        <div class="device__frame" id="frame"><iframe id="view" title="Prototype preview"></iframe></div>
+        <div class="device__meta" id="meta"></div>
+      </div>
+    </div>
+    <div class="sheet" id="sheet-view" hidden>
+      <div class="sheet__grid" id="grid"></div>
+    </div>
+  </main>
+  <script>
+    (function review() {
+      "use strict";
+      var HEIGHTS = { 360: 780, 390: 844, 768: 1024, 1024: 768, 1280: 800, 1440: 900, 1920: 1080 };
+      var SHEET_WIDTHS = [390, 1280];
+      var el = function (id) { return document.getElementById(id); };
+      var manifest = { pages: [] };
+      var params = new URLSearchParams(location.search);
+      var settings = {
+        page: params.get("page") || "",
+        state: params.get("state") || "",
+        theme: params.get("theme") || "system",
+        platform: params.get("platform") || "",
+        width: params.get("width") || "fit",
+        sheet: params.get("sheet") === "1"
+      };
+
+      function currentPage() {
+        return manifest.pages.find(function (page) { return page.path === settings.page; }) || manifest.pages[0];
+      }
+
+      function pageUrl(page, state, extra) {
+        var query = new URLSearchParams();
+        if (state && page.kind !== "deck") query.set("state", state);
+        if (state && page.kind === "deck") query.set("slide", state);
+        if (settings.theme !== "system") query.set("theme", settings.theme);
+        if (settings.platform) query.set("platform", settings.platform);
+        Object.keys(extra || {}).forEach(function (key) { query.set(key, extra[key]); });
+        var text = query.toString();
+        return "/" + page.path.split("/").map(encodeURIComponent).join("/") + (text ? "?" + text : "");
+      }
+
+      function statesOf(page) {
+        if (!page) return [];
+        if (page.kind === "deck") return Array.from({ length: page.slides || 1 }, function (_, i) { return String(i + 1); });
+        return page.states && page.states.length ? page.states : [""];
+      }
+
+      function save() {
+        var query = new URLSearchParams();
+        Object.keys(settings).forEach(function (key) {
+          var value = settings[key];
+          if (value === true) query.set(key, "1");
+          else if (value && value !== "system" && value !== "fit") query.set(key, value);
+        });
+        history.replaceState(null, "", "?" + query.toString());
+      }
+
+      function renderControls() {
+        var page = currentPage();
+        el("page").innerHTML = "";
+        manifest.pages.forEach(function (item) {
+          var option = document.createElement("option");
+          option.value = item.path;
+          option.textContent = item.path;
+          option.selected = page && item.path === page.path;
+          el("page").appendChild(option);
+        });
+        var states = statesOf(page);
+        if (states.indexOf(settings.state) === -1) settings.state = states[0] || "";
+        el("states").innerHTML = "";
+        states.forEach(function (state) {
+          var chip = document.createElement("button");
+          chip.type = "button";
+          chip.className = "chip";
+          chip.textContent = state || "default";
+          chip.setAttribute("aria-pressed", String(state === settings.state));
+          chip.addEventListener("click", function () { settings.state = state; update(); });
+          el("states").appendChild(chip);
+        });
+        document.querySelectorAll("#theme [data-value]").forEach(function (button) {
+          button.setAttribute("aria-pressed", String(button.dataset.value === settings.theme));
+        });
+        el("platform").value = settings.platform;
+        el("width").value = settings.width;
+        el("sheet").setAttribute("aria-pressed", String(settings.sheet));
+      }
+
+      function renderSingle() {
+        var page = currentPage();
+        var frame = el("frame");
+        var view = el("view");
+        var stage = el("single");
+        var url = pageUrl(page, settings.state);
+        if (view.getAttribute("src") !== url) view.setAttribute("src", url);
+        el("open").setAttribute("href", url);
+        var box = el("main").getBoundingClientRect();
+        var availableW = Math.max(240, box.width - 48);
+        var availableH = Math.max(240, box.height - 80);
+        var width = settings.width === "fit" ? availableW : Number(settings.width);
+        var height = settings.width === "fit" ? availableH : (HEIGHTS[width] || 900);
+        var scale = Math.min(1, availableW / width, availableH / height);
+        view.style.width = width + "px";
+        view.style.height = height + "px";
+        view.style.transform = "scale(" + scale + ")";
+        frame.style.width = Math.round(width * scale) + "px";
+        frame.style.height = Math.round(height * scale) + "px";
+        el("meta").textContent = Math.round(width) + " × " + Math.round(height) + (scale < 1 ? " · " + Math.round(scale * 100) + "%" : "") + " · " + url;
+      }
+
+      function renderSheet() {
+        var page = currentPage();
+        var grid = el("grid");
+        grid.innerHTML = "";
+        var deck = page && page.kind === "deck";
+        var widths = deck ? [1920] : SHEET_WIDTHS;
+        var gap = 24;
+        var room = Math.max(320, el("sheet-view").clientWidth - 48 - 24);
+        var scale = deck
+          ? Math.min(0.5, (room - gap) / (2 * 1920))
+          : Math.min(0.5, (room - gap * (widths.length - 1)) / widths.reduce(function (sum, width) { return sum + width; }, 0));
+        var row = null;
+        statesOf(page).forEach(function (state, index) {
+          if (!deck || index === 0) {
+            row = document.createElement("div");
+            row.className = "sheet__row";
+            grid.appendChild(row);
+          }
+          widths.forEach(function (width) {
+            var height = HEIGHTS[width] || 900;
+            var cell = document.createElement("figure");
+            cell.className = "cell";
+            cell.style.width = Math.round(width * scale) + "px";
+            var frame = document.createElement("div");
+            frame.className = "cell__frame";
+            frame.style.height = Math.round(height * scale) + "px";
+            var iframe = document.createElement("iframe");
+            iframe.title = (state || "default") + " at " + width + " pixels";
+            iframe.src = pageUrl(page, state);
+            iframe.style.width = width + "px";
+            iframe.style.height = height + "px";
+            iframe.style.transform = "scale(" + scale + ")";
+            frame.appendChild(iframe);
+            var meta = document.createElement("figcaption");
+            meta.className = "cell__meta";
+            var name = document.createElement("strong");
+            name.textContent = deck ? "Slide " + state : (state || "default");
+            var size = document.createElement("span");
+            size.textContent = width + " × " + height;
+            meta.appendChild(name);
+            meta.appendChild(size);
+            cell.appendChild(frame);
+            cell.appendChild(meta);
+            row.appendChild(cell);
+          });
+        });
+      }
+
+      function update() {
+        if (!manifest.pages.length) return;
+        save();
+        renderControls();
+        el("single").hidden = settings.sheet;
+        el("sheet-view").hidden = !settings.sheet;
+        if (settings.sheet) renderSheet();
+        else renderSingle();
+      }
+
+      el("page").addEventListener("change", function (event) { settings.page = event.target.value; settings.state = ""; update(); });
+      el("platform").addEventListener("change", function (event) { settings.platform = event.target.value; update(); });
+      el("width").addEventListener("change", function (event) { settings.width = event.target.value; update(); });
+      el("sheet").addEventListener("click", function () { settings.sheet = !settings.sheet; update(); });
+      document.querySelectorAll("#theme [data-value]").forEach(function (button) {
+        button.addEventListener("click", function () { settings.theme = button.dataset.value; update(); });
+      });
+      document.addEventListener("keydown", function (event) {
+        if (event.target.closest("input, select, textarea")) return;
+        var states = statesOf(currentPage());
+        var index = states.indexOf(settings.state);
+        if (event.key === "]") settings.state = states[(index + 1) % states.length];
+        else if (event.key === "[") settings.state = states[(index - 1 + states.length) % states.length];
+        else if (event.key === "t") settings.theme = { system: "light", light: "dark", dark: "system" }[settings.theme];
+        else if (event.key === "s") settings.sheet = !settings.sheet;
+        else return;
+        update();
+      });
+      window.addEventListener("resize", function () { if (settings.sheet) renderSheet(); else renderSingle(); });
+
+      fetch("/__pfui/manifest.json").then(function (response) { return response.json(); }).then(function (data) {
+        manifest = data;
+        if (!manifest.pages.length) {
+          var note = document.createElement("p");
+          note.className = "empty-note";
+          note.textContent = "No HTML pages were found under " + data.root + ".";
+          el("single").replaceChildren(note);
+          return;
+        }
+        update();
+      });
+    })();
+  </script>
+</body>
+</html>

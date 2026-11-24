@@ -18,6 +18,10 @@ EXPECTED = [
     "package-validation",
     "javascript-syntax",
     "bootstrap-safety",
+    "design-tokens",
+    "design-lint",
+    "starter-quality",
+    "pfui-cli",
 ]
 
 def command_version(command: List[str]) -> Optional[str]:
@@ -57,6 +61,7 @@ def main() -> int:
             "This suite checks DOM collector syntax, not live-browser integration or browser availability.",
             "This suite uses the package validator; a detected skills-ref executable does not mean it was executed.",
             "Natural-language semantic necessity and visual quality remain rendered-review tasks rather than deterministic tests.",
+            "Design lint and token checks are static; generated iOS, Android and Flutter token files are not compiled here.",
         ],
     }
     output = Path(args.output).resolve()

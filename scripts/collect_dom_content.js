@@ -165,13 +165,36 @@
     return normalizeText(value);
   }
 
+  // Review parameters that identify a prototype state; values are restricted
+  // to short identifiers so no free-form or private data survives.
+  const REVIEW_PARAMETERS = ["state", "theme", "platform", "density", "slide"];
+  const REVIEW_VALUE = /^[a-z0-9][a-z0-9-]{0,39}$/;
+
+  function reviewState(value) {
+    const state = {};
+    try {
+      const parsed = new globalObject.URL(String(value));
+      REVIEW_PARAMETERS.forEach(function keep(name) {
+        const raw = parsed.searchParams.get(name);
+        if (raw && REVIEW_VALUE.test(raw)) state[name] = raw;
+      });
+    } catch (error) {
+      return state;
+    }
+    return state;
+  }
+
   function safePageUrl(value) {
     try {
       const parsed = new globalObject.URL(String(value));
+      const kept = reviewState(value);
       parsed.username = "";
       parsed.password = "";
       parsed.search = "";
       parsed.hash = "";
+      Object.keys(kept).forEach(function append(name) {
+        parsed.searchParams.set(name, kept[name]);
+      });
       return parsed.toString();
     } catch (error) {
       return null;
@@ -418,6 +441,7 @@
       capturedAt: new Date().toISOString(),
       page: {
         url: globalObject.location ? safePageUrl(globalObject.location.href) : null,
+        reviewState: globalObject.location ? reviewState(globalObject.location.href) : {},
         title: globalObject.document ? String(globalObject.document.title || "") : "",
         language: globalObject.document && globalObject.document.documentElement
           ? globalObject.document.documentElement.lang || null

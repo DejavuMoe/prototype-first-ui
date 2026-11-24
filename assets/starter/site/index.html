@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="{{LANG}}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{page.title}}</title>
+  <meta name="description" content="{{page.description}}">
+  <link rel="stylesheet" href="styles/tokens.css">
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="site.css">
+  <script src="styles/params.js"></script>
+</head>
+<body class="site">
+  <a class="site__skip" href="#main">{{nav.skip}}</a>
+  <header class="site__header">
+    <div class="container site__bar">
+      <a class="site__brand" href="#main">{{NAME}}</a>
+      <nav class="site__nav" aria-label="{{nav.label}}">
+        <a href="#section-1">{{nav.item-1}}</a>
+        <a href="#section-2">{{nav.item-2}}</a>
+      </nav>
+      <a class="btn btn--primary" href="#next-step">{{nav.action}}</a>
+    </div>
+  </header>
+
+  <main id="main">
+    <section class="site__intro" aria-labelledby="intro-title">
+      <div class="container">
+        <h1 class="site__headline" id="intro-title">{{intro.headline}}</h1>
+        <p class="site__lede">{{intro.lede}}</p>
+        <div class="cluster site__actions">
+          <a class="btn btn--primary btn--lg" href="#next-step">{{intro.action}}</a>
+        </div>
+      </div>
+    </section>
+
+    <section class="site__section" id="section-1" aria-labelledby="section-1-title">
+      <div class="container">
+        <h2 class="site__heading" id="section-1-title">{{section-1.heading}}</h2>
+        <div class="grid site__points">
+          <article class="site__point"><h3>{{point-1.title}}</h3><p>{{point-1.body}}</p></article>
+          <article class="site__point"><h3>{{point-2.title}}</h3><p>{{point-2.body}}</p></article>
+          <article class="site__point"><h3>{{point-3.title}}</h3><p>{{point-3.body}}</p></article>
+        </div>
+      </div>
+    </section>
+
+    <section class="site__section site__section--alt" id="section-2" aria-labelledby="section-2-title">
+      <div class="container site__split">
+        <div class="prose">
+          <h2 class="site__heading" id="section-2-title">{{section-2.heading}}</h2>
+          <p>{{section-2.body}}</p>
+        </div>
+        <figure class="site__media">
+          <div class="site__media-frame" role="img" aria-label="{{section-2.media-alt}}"></div>
+        </figure>
+      </div>
+    </section>
+
+    <section class="site__section" id="next-step" aria-labelledby="next-step-title">
+      <div class="container site__closing">
+        <h2 class="site__heading" id="next-step-title">{{next-step.heading}}</h2>
+        <p class="site__lede">{{next-step.body}}</p>
+        <a class="btn btn--primary btn--lg" href="#main">{{next-step.action}}</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site__footer">
+    <div class="container split">
+      <p>{{footer.legal}}</p>
+      <nav class="cluster" aria-label="{{footer.nav-label}}"><a href="#main">{{footer.link-1}}</a></nav>
+    </div>
+  </footer>
+</body>
+</html>

@@ -1,7 +1,8 @@
 # Workflow reference
 
-This file defines the detailed lifecycle behind `SKILL.md`. Read the sections for
-the selected mode only.
+This file defines the product UI lifecycle behind `SKILL.md`. Read only the
+selected mode. Standalone design systems, decks, print layouts and charts use
+their capability reference and delivery checks, not this production UI gate.
 
 ## State machine
 
@@ -39,8 +40,18 @@ Revisions return to review before implementation.
 | Implement exact approved deliverable | `implement` | Yes, scoped slice only |
 | Prototype and production disagree | `sync` | Only after mismatch classification and proper gate |
 | Check an existing slice | `verify` | Fixes only when authorized and already in contract |
+| Judge quality of an existing UI ("make it better", design review) | `critique` | No; findings first, changes go through `prototype` |
 
 Do not use bootstrap as a ritual. It is optional and destructive.
+
+## Critique
+
+Read-only. Render the existing surface at its real sizes, themes and states,
+run `pfui.py lint` on available HTML/CSS, and score the
+[critique rubric](design-quality.md#critique-protocol) with evidence. Report
+findings ranked by user impact, each with the state, size and element it
+concerns and the standard it misses. Proposed fixes become a normal
+`prototype` change; do not edit production from a critique.
 
 ## Lifecycle A — optional one-time bootstrap
 
@@ -126,6 +137,15 @@ The helper does not add a remote or push. End the mode after the baseline commit
 
 ## Lifecycle B — audit
 
+Product UI work expects `AGENTS.md` and `docs/product/constraints.md` (with the
+content profile). When they are missing, propose creating them with the
+non-destructive `python <skill-dir>/scripts/bootstrap.py scaffold --repo .
+--project-name "<Name>" --project-slug <slug> --surface-type operational
+--content-profile operational-strict`. It only writes templates, keeps existing
+files and never touches Git history. These are durable project files: create
+them only with the user's agreement, and pass `--allow-agents
+--allow-constraints` to `design-scope` for that change.
+
 Create `docs/ui/capabilities.md` from the template. Evidence should include:
 
 - users and primary product jobs;
@@ -162,7 +182,7 @@ by default.
 
 ### C2. Direction generation
 
-Invoke `$baoyu-design`. Use the same capability set and sanitized fixture data for
+Follow [UI design](ui-design.md). Use the same capability set and sanitized fixture data for
 all directions. Vary real information architecture:
 
 - navigation model;
@@ -179,7 +199,7 @@ Recommended structure:
 
 ```text
 designs/<project>/
-├── _d_meta.json
+├── design-review.json
 ├── ui-contract.json
 ├── design-sources.json       # when external/multimodal sources are used
 ├── content-inventory.json
@@ -194,16 +214,22 @@ designs/<project>/
 └── screenshots/
 ```
 
-Baoyu-Design may use another compatible split. Preserve its required metadata and
-keep small changes diff-readable.
+Create only files the deliverable needs; plain HTML/CSS/JS or the existing stack
+is sufficient. `pfui.py init app --name <Name> --platform <p> --product` creates
+the shell, copied system styles, state views, `pfui.json`, `design-review.json`
+and `ui-contract.json` in one step. Keep small changes diff-readable and list
+visual/behavior dependencies in the UI contract. No external editor/runtime is
+required.
 
 ### C3. Content and runtime review
 
 - Enforce `references/content-contract.md`.
-- Capture rendered DOM strings and text-bearing attributes where possible.
+- Serve over HTTP (`pfui.py serve`, kept running in the background) and inspect
+  interactions, errors, and screenshots of every state; score the critique
+  rubric and fix blockers.
+- Capture rendered DOM strings and text-bearing attributes from each state URL.
 - Create/update `content-inventory.json`.
 - Run `scripts/content_audit.py check` after classification.
-- Serve over HTTP and inspect interactions, errors, and screenshots.
 - Record the deliverable `needs-review`.
 - Run design-scope, contract, sources, and content checks.
 - Present and stop.
@@ -234,7 +260,12 @@ asks for exploration, produce one coherent extension.
 Approval is a state transition, not a mood. Require the exact deliverable path or
 an unambiguous immediately preceding version.
 
-1. Re-record the same path with Baoyu-Design status `approved`.
+1. Record the same path as `approved` in `design-review.json` with actual user
+   approval evidence, following [the review contract](design-review.md), and
+   set the matching `ui-contract.json` surface `status` to `approved`. Surface
+   statuses: `prototype` while drafting, `needs-review`, `approved`,
+   `implemented` once Lifecycle F lands, `drift` when sync finds a mismatch.
+   `pfui.py check` flags a surface and review record that disagree.
 2. Re-capture strings; no unclassified or removal-pending content may remain.
 3. Validate source roles and UI contract.
 4. Run:
@@ -280,8 +311,9 @@ Typical full-redesign slices:
 5. loading/empty/error/progress states;
 6. accessibility, keyboard, window, and platform polish.
 
-Update `ui-contract.json` production mappings as each slice lands. Keep design and
-implementation commits separate.
+Update `ui-contract.json` production mappings as each slice lands and set the
+surface `status` to `implemented`. Keep design and implementation commits
+separate.
 
 ## Lifecycle G — production verification
 
@@ -318,6 +350,13 @@ Never update both sides in one opaque commit.
 
 ## Validation command set
 
+`pfui.py check designs/<project>` covers review records, the contract (draft
+phase, or approved phase with `--final`, plus review/contract consistency),
+design sources, the content inventory, tokens and the design lint. Structure,
+design-scope, approval and the implementation gate run separately.
+`pfui.py gate <command>` and `pfui.py content <command>` are equivalent to the
+scripts shown.
+
 ```bash
 # Validate the skill package itself
 python <skill-dir>/scripts/validate_skill.py --skill-dir <skill-dir>
@@ -341,7 +380,7 @@ python <skill-dir>/scripts/validate_workflow.py sources \
 python <skill-dir>/scripts/content_audit.py check \
   --inventory designs/<project>/content-inventory.json
 
-# Exact Baoyu approval
+# Exact project-owned approval
 python <skill-dir>/scripts/validate_workflow.py approval \
   --project-dir designs/<project> --asset-path <file>
 ```

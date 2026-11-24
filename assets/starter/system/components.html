@@ -1,0 +1,707 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{NAME}} design system</title>
+  <link rel="stylesheet" href="tokens.css">
+  <link rel="stylesheet" href="base.css">
+  <script src="params.js"></script>
+  <style>
+    .doc-bar {
+      position: sticky;
+      top: 0;
+      z-index: var(--z-sticky);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: var(--space-3) var(--space-5);
+      padding: var(--space-3) var(--space-6);
+      border-bottom: 1px solid var(--color-border-default);
+      background: var(--color-bg-surface);
+    }
+    .doc-bar__title { display: flex; align-items: center; gap: var(--space-2); font-weight: var(--font-weight-semibold); }
+    .doc-bar__mark { display: grid; place-items: center; width: 1.75rem; height: 1.75rem; border-radius: var(--radius-md); background: var(--color-accent-default); color: var(--color-text-on-accent); --icon-size: 1rem; }
+    .doc-bar__controls { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-3); margin-inline-start: auto; }
+    .doc-bar__group { display: flex; align-items: center; gap: var(--space-2); font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+    .doc-layout { display: grid; grid-template-columns: 13rem minmax(0, 1fr); gap: var(--space-10); max-width: 84rem; margin-inline: auto; padding: var(--space-8) var(--space-6) var(--space-24); }
+    .doc-toc { position: sticky; top: 5rem; align-self: start; }
+    .doc-main { display: flex; flex-direction: column; gap: var(--space-16); min-width: 0; }
+    .doc-section { display: flex; flex-direction: column; gap: var(--space-5); scroll-margin-top: 5rem; }
+    .doc-section__head { display: flex; flex-direction: column; gap: var(--space-1); max-width: 44rem; }
+    .doc-section__head p { color: var(--color-text-secondary); }
+    .doc-sub { font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); color: var(--color-text-secondary); }
+    .doc-specimen { padding: var(--space-6); }
+    .doc-matrix { overflow-x: auto; }
+    .doc-row { display: grid; grid-template-columns: 7.5rem repeat(6, minmax(0, 1fr)); align-items: center; gap: var(--space-3); min-width: 50rem; }
+    .doc-row + .doc-row { margin-top: var(--space-3); }
+    .doc-row__label { font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+    .doc-head { font-size: var(--font-size-xs); color: var(--color-text-tertiary); }
+    .doc-swatches { display: grid; grid-template-columns: repeat(auto-fill, minmax(11rem, 1fr)); gap: var(--space-3); }
+    .doc-swatch { display: flex; flex-direction: column; gap: var(--space-2); padding: var(--space-4); border: 1px solid var(--color-border-default); border-radius: var(--radius-lg); min-height: 8.5rem; }
+    .doc-swatch__name { font-size: var(--font-size-sm); font-weight: var(--font-weight-semibold); }
+    .doc-swatch__token { font-family: var(--font-family-mono); font-size: var(--font-size-xs); color: var(--color-text-secondary); }
+    .doc-swatch__samples { margin-top: auto; display: flex; flex-direction: column; gap: 2px; font-size: var(--font-size-sm); }
+    .doc-ratio { display: flex; justify-content: space-between; gap: var(--space-2); }
+    .doc-ratio output { font-family: var(--font-family-mono); font-size: var(--font-size-xs); font-variant-numeric: tabular-nums; }
+    .doc-ramp { display: grid; grid-template-columns: repeat(auto-fit, minmax(3.5rem, 1fr)); border-radius: var(--radius-md); overflow: hidden; border: 1px solid var(--color-border-subtle); }
+    .doc-ramp span { height: 2.5rem; }
+    .doc-ramp-label { display: flex; justify-content: space-between; font-family: var(--font-family-mono); font-size: var(--font-size-xs); color: var(--color-text-tertiary); }
+    .doc-type { display: grid; grid-template-columns: 9rem minmax(0, 1fr); gap: var(--space-2) var(--space-6); align-items: baseline; padding: var(--space-4) 0; border-bottom: 1px solid var(--color-border-subtle); }
+    .doc-type:last-child { border-bottom: 0; }
+    .doc-type__meta { display: flex; flex-direction: column; font-size: var(--font-size-xs); color: var(--color-text-tertiary); font-family: var(--font-family-mono); }
+    .doc-type__meta strong { font-family: var(--font-family-sans); font-size: var(--font-size-sm); color: var(--color-text-primary); }
+    .doc-scale { display: flex; flex-direction: column; gap: var(--space-2); }
+    .doc-scale__row { display: grid; grid-template-columns: 4rem 3.5rem minmax(0, 1fr); align-items: center; gap: var(--space-3); font-family: var(--font-family-mono); font-size: var(--font-size-xs); color: var(--color-text-secondary); }
+    .doc-scale__bar { height: 0.75rem; border-radius: 2px; background: var(--color-accent-default); }
+    .doc-tiles { display: grid; grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr)); gap: var(--space-5); }
+    .doc-tile { display: grid; place-items: center; height: 6rem; background: var(--color-bg-surface); border: 1px solid var(--color-border-default); font-family: var(--font-family-mono); font-size: var(--font-size-xs); color: var(--color-text-secondary); }
+    .doc-elev { border-color: transparent; border-radius: var(--radius-lg); }
+    .doc-stage { position: relative; display: grid; place-items: center; padding: var(--space-10) var(--space-4); border-radius: var(--radius-lg); background: var(--color-bg-overlay); }
+    .doc-stage .dialog { position: static; margin: 0; }
+    .doc-frame { height: 34rem; overflow: hidden; border: 1px solid var(--color-border-default); border-radius: var(--radius-xl); box-shadow: var(--shadow-md); }
+    .doc-frame .app { min-height: 0; height: 100%; }
+    .doc-frame .app__sidebar { position: static; height: auto; }
+    .doc-legend { display: flex; flex-wrap: wrap; gap: var(--space-4); font-size: var(--font-size-sm); color: var(--color-text-secondary); }
+    .doc-legend span { display: inline-flex; align-items: center; gap: var(--space-2); }
+    .doc-legend i { width: 0.75rem; height: 0.75rem; border-radius: 3px; }
+    .doc-bars { display: flex; flex-direction: column; gap: var(--space-2); }
+    .doc-bars__row { display: grid; grid-template-columns: 6rem minmax(0, 1fr) 3rem; align-items: center; gap: var(--space-3); font-size: var(--font-size-sm); }
+    .doc-bars__bar { height: 0.875rem; border-radius: 0 3px 3px 0; }
+    .doc-bars__value { text-align: end; font-variant-numeric: tabular-nums; color: var(--color-text-secondary); }
+    @media (max-width: 1023px) {
+      .doc-layout { grid-template-columns: minmax(0, 1fr); padding-inline: var(--space-4); }
+      .doc-toc { display: none; }
+    }
+  </style>
+</head>
+<body>
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false">
+    <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+    <symbol id="i-check" viewBox="0 0 24 24"><path d="M5 12.5l4.5 4.5L19 7.5"/></symbol>
+    <symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></symbol>
+    <symbol id="i-search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></symbol>
+    <symbol id="i-chevron-down" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></symbol>
+    <symbol id="i-chevron-right" viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></symbol>
+    <symbol id="i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v5M12 7.6v.01"/></symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24"><path d="M12 4.5l8.5 15h-17z"/><path d="M12 10v4M12 16.8v.01"/></symbol>
+    <symbol id="i-check-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M8.5 12.5l2.3 2.3 4.7-5"/></symbol>
+    <symbol id="i-x-circle" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M9.5 9.5l5 5M14.5 9.5l-5 5"/></symbol>
+    <symbol id="i-inbox" viewBox="0 0 24 24"><path d="M4 13.5L6.5 6h11l2.5 7.5V19H4z"/><path d="M4 13.5h4.5l1 2h5l1-2H20"/></symbol>
+    <symbol id="i-home" viewBox="0 0 24 24"><path d="M4.5 10.5L12 4l7.5 6.5V20h-5v-5.5h-5V20h-5z"/></symbol>
+    <symbol id="i-file" viewBox="0 0 24 24"><path d="M7 3.5h6.5L18 8v12.5H7z"/><path d="M13.5 3.5V8H18M9.5 12.5h6M9.5 16h6"/></symbol>
+    <symbol id="i-users" viewBox="0 0 24 24"><circle cx="9" cy="8.5" r="3.5"/><path d="M3 19.5c.7-3.2 3-5 6-5s5.3 1.8 6 5"/><circle cx="17" cy="9" r="2.5"/><path d="M16.5 14.6c2 .3 3.6 1.8 4 4.4"/></symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24"><path d="M5 20V11M12 20V5M19 20v-6"/></symbol>
+    <symbol id="i-sliders" viewBox="0 0 24 24"><path d="M4 7h9M17 7h3M4 17h3M11 17h9"/><circle cx="15" cy="7" r="2"/><circle cx="9" cy="17" r="2"/></symbol>
+    <symbol id="i-download" viewBox="0 0 24 24"><path d="M12 4v11M7.5 10.5L12 15l4.5-4.5M5 19.5h14"/></symbol>
+    <symbol id="i-more" viewBox="0 0 24 24"><path d="M6 12h.01M12 12h.01M18 12h.01" stroke-width="3"/></symbol>
+    <symbol id="i-trash" viewBox="0 0 24 24"><path d="M4.5 7h15M10 7V4.5h4V7M6.5 7l1 13h9l1-13"/></symbol>
+    <symbol id="i-layers" viewBox="0 0 24 24"><path d="M12 4l8.5 4.5L12 13 3.5 8.5z"/><path d="M3.5 12.5L12 17l8.5-4.5M3.5 16.5L12 21l8.5-4.5"/></symbol>
+  </svg>
+
+  <header class="doc-bar">
+    <div class="doc-bar__title">
+      <span class="doc-bar__mark"><svg class="icon" aria-hidden="true"><use href="#i-layers"/></svg></span>
+      <span>{{NAME}} design system</span>
+    </div>
+    <div class="doc-bar__controls">
+      <div class="doc-bar__group" role="group" aria-label="Theme">
+        <span aria-hidden="true">Theme</span>
+        <div class="segmented">
+          <button type="button" class="segmented__item" data-setting="theme" data-value="light">Light</button>
+          <button type="button" class="segmented__item" data-setting="theme" data-value="dark">Dark</button>
+          <button type="button" class="segmented__item" data-setting="theme" data-value="system">System</button>
+        </div>
+      </div>
+      <div class="doc-bar__group" role="group" aria-label="Density">
+        <span aria-hidden="true">Density</span>
+        <div class="segmented">
+          <button type="button" class="segmented__item" data-setting="density" data-value="compact">Compact</button>
+          <button type="button" class="segmented__item" data-setting="density" data-value="default">Default</button>
+          <button type="button" class="segmented__item" data-setting="density" data-value="comfortable">Comfortable</button>
+        </div>
+      </div>
+      <div class="doc-bar__group" role="group" aria-label="Platform">
+        <span aria-hidden="true">Platform</span>
+        <div class="segmented">
+          <button type="button" class="segmented__item" data-setting="platform" data-value="web">Web</button>
+          <button type="button" class="segmented__item" data-setting="platform" data-value="desktop">Desktop</button>
+          <button type="button" class="segmented__item" data-setting="platform" data-value="ios">iOS</button>
+          <button type="button" class="segmented__item" data-setting="platform" data-value="android">Android</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="doc-layout">
+    <nav class="doc-toc" aria-label="Sections">
+      <div class="nav">
+        <div class="nav__section">Foundations</div>
+        <a class="nav__item" href="#color">Color</a>
+        <a class="nav__item" href="#type">Typography</a>
+        <a class="nav__item" href="#space">Space, shape, depth</a>
+        <div class="nav__section">Components</div>
+        <a class="nav__item" href="#buttons">Buttons</a>
+        <a class="nav__item" href="#forms">Form controls</a>
+        <a class="nav__item" href="#feedback">Feedback</a>
+        <a class="nav__item" href="#navigation">Navigation</a>
+        <a class="nav__item" href="#data">Data display</a>
+        <a class="nav__item" href="#overlays">Overlays and empty states</a>
+        <a class="nav__item" href="#composition">Composition</a>
+      </div>
+    </nav>
+
+    <main class="doc-main" id="main">
+      <section class="doc-section" id="color" aria-labelledby="color-title">
+        <div class="doc-section__head">
+          <h1 id="color-title">Color</h1>
+          <p>Components use semantic roles, never ramp steps. Ratios below are measured live against the rendered background in the current theme.</p>
+        </div>
+
+        <h2 class="doc-sub">Surfaces and text</h2>
+        <div class="doc-swatches">
+          <div class="doc-swatch" style="background: var(--color-bg-canvas)">
+            <span class="doc-swatch__name">Canvas</span><span class="doc-swatch__token">bg.canvas</span>
+            <div class="doc-swatch__samples">
+              <span class="doc-ratio" data-contrast><span>Primary</span><output></output></span>
+              <span class="doc-ratio text-secondary" data-contrast><span>Secondary</span><output></output></span>
+              <span class="doc-ratio text-tertiary" data-contrast><span>Tertiary</span><output></output></span>
+            </div>
+          </div>
+          <div class="doc-swatch" style="background: var(--color-bg-surface)">
+            <span class="doc-swatch__name">Surface</span><span class="doc-swatch__token">bg.surface</span>
+            <div class="doc-swatch__samples">
+              <span class="doc-ratio" data-contrast><span>Primary</span><output></output></span>
+              <span class="doc-ratio text-secondary" data-contrast><span>Secondary</span><output></output></span>
+              <span class="doc-ratio text-tertiary" data-contrast><span>Tertiary</span><output></output></span>
+            </div>
+          </div>
+          <div class="doc-swatch" style="background: var(--color-bg-raised); box-shadow: var(--shadow-md)">
+            <span class="doc-swatch__name">Raised</span><span class="doc-swatch__token">bg.raised</span>
+            <div class="doc-swatch__samples">
+              <span class="doc-ratio" data-contrast><span>Primary</span><output></output></span>
+              <span class="doc-ratio text-secondary" data-contrast><span>Secondary</span><output></output></span>
+              <span class="doc-ratio text-tertiary" data-contrast><span>Tertiary</span><output></output></span>
+            </div>
+          </div>
+          <div class="doc-swatch" style="background: var(--color-bg-subtle)">
+            <span class="doc-swatch__name">Subtle</span><span class="doc-swatch__token">bg.subtle</span>
+            <div class="doc-swatch__samples">
+              <span class="doc-ratio" data-contrast><span>Primary</span><output></output></span>
+              <span class="doc-ratio text-secondary" data-contrast><span>Secondary</span><output></output></span>
+              <span class="doc-ratio text-tertiary" data-contrast><span>Tertiary</span><output></output></span>
+            </div>
+          </div>
+          <div class="doc-swatch" style="background: var(--color-accent-subtle); border-color: var(--color-accent-border)">
+            <span class="doc-swatch__name">Accent subtle</span><span class="doc-swatch__token">accent.subtle</span>
+            <div class="doc-swatch__samples">
+              <span class="doc-ratio" data-contrast><span>Primary</span><output></output></span>
+              <span class="doc-ratio" style="color: var(--color-accent-text)" data-contrast><span>Accent text</span><output></output></span>
+            </div>
+          </div>
+          <div class="doc-swatch" style="background: var(--color-accent-default); border-color: transparent; color: var(--color-text-on-accent)">
+            <span class="doc-swatch__name">Accent</span><span class="doc-swatch__token" style="color: inherit">accent.default</span>
+            <div class="doc-swatch__samples">
+              <span class="doc-ratio" data-contrast><span>On accent</span><output></output></span>
+            </div>
+          </div>
+          <div class="doc-swatch" style="background: var(--color-bg-inverse); border-color: transparent; color: var(--color-text-inverse)">
+            <span class="doc-swatch__name">Inverse</span><span class="doc-swatch__token" style="color: inherit">bg.inverse</span>
+            <div class="doc-swatch__samples">
+              <span class="doc-ratio" data-contrast><span>Inverse text</span><output></output></span>
+            </div>
+          </div>
+        </div>
+
+        <h2 class="doc-sub">Status</h2>
+        <div class="doc-swatches">
+          <div class="doc-swatch" style="background: var(--color-success-bg); border-color: var(--color-success-border)">
+            <span class="doc-swatch__name" style="color: var(--color-success-text)">Success</span><span class="doc-swatch__token">success.*</span>
+            <div class="doc-swatch__samples">
+              <span class="doc-ratio" style="color: var(--color-success-text)" data-contrast><span>Status text</span><output></output></span>
+              <span class="doc-ratio" data-contrast><span>Body text</span><output></output></span>
+            </div>
+          </div>
+          <div class="doc-swatch" style="background: var(--color-warning-bg); border-color: var(--color-warning-border)">
+            <span class="doc-swatch__name" style="color: var(--color-warning-text)">Warning</span><span class="doc-swatch__token">warning.*</span>
+            <div class="doc-swatch__samples">
+              <span class="doc-ratio" style="color: var(--color-warning-text)" data-contrast><span>Status text</span><output></output></span>
+              <span class="doc-ratio" data-contrast><span>Body text</span><output></output></span>
+            </div>
+          </div>
+          <div class="doc-swatch" style="background: var(--color-danger-bg); border-color: var(--color-danger-border)">
+            <span class="doc-swatch__name" style="color: var(--color-danger-text)">Danger</span><span class="doc-swatch__token">danger.*</span>
+            <div class="doc-swatch__samples">
+              <span class="doc-ratio" style="color: var(--color-danger-text)" data-contrast><span>Status text</span><output></output></span>
+              <span class="doc-ratio" data-contrast><span>Body text</span><output></output></span>
+            </div>
+          </div>
+          <div class="doc-swatch" style="background: var(--color-info-bg); border-color: var(--color-info-border)">
+            <span class="doc-swatch__name" style="color: var(--color-info-text)">Info</span><span class="doc-swatch__token">info.*</span>
+            <div class="doc-swatch__samples">
+              <span class="doc-ratio" style="color: var(--color-info-text)" data-contrast><span>Status text</span><output></output></span>
+              <span class="doc-ratio" data-contrast><span>Body text</span><output></output></span>
+            </div>
+          </div>
+        </div>
+
+        <h2 class="doc-sub">Ramps</h2>
+        <div class="stack" style="--stack-gap: var(--space-3)">
+          <div class="doc-ramp" aria-label="Neutral ramp" role="img">
+            <span style="background: var(--color-neutral-0)"></span><span style="background: var(--color-neutral-50)"></span><span style="background: var(--color-neutral-100)"></span><span style="background: var(--color-neutral-200)"></span><span style="background: var(--color-neutral-300)"></span><span style="background: var(--color-neutral-400)"></span><span style="background: var(--color-neutral-500)"></span><span style="background: var(--color-neutral-600)"></span><span style="background: var(--color-neutral-700)"></span><span style="background: var(--color-neutral-800)"></span><span style="background: var(--color-neutral-900)"></span><span style="background: var(--color-neutral-975)"></span>
+          </div>
+          <div class="doc-ramp" aria-label="Blue ramp" role="img">
+            <span style="background: var(--color-blue-50)"></span><span style="background: var(--color-blue-100)"></span><span style="background: var(--color-blue-200)"></span><span style="background: var(--color-blue-300)"></span><span style="background: var(--color-blue-400)"></span><span style="background: var(--color-blue-500)"></span><span style="background: var(--color-blue-600)"></span><span style="background: var(--color-blue-700)"></span><span style="background: var(--color-blue-800)"></span><span style="background: var(--color-blue-900)"></span><span style="background: var(--color-blue-950)"></span>
+          </div>
+          <div class="doc-ramp-label"><span>50</span><span>500</span><span>950</span></div>
+        </div>
+
+        <h2 class="doc-sub">Data</h2>
+        <div class="panel doc-specimen">
+          <div class="stack">
+            <div class="doc-bars" role="img" aria-label="Orders by channel: Web 412, Mobile 318, Partner 204, Retail 156, Phone 87, Other 41">
+              <div class="doc-bars__row"><span>Web</span><span class="doc-bars__bar" style="width: 100%; background: var(--color-data-1)"></span><span class="doc-bars__value">412</span></div>
+              <div class="doc-bars__row"><span>Mobile</span><span class="doc-bars__bar" style="width: 77%; background: var(--color-data-2)"></span><span class="doc-bars__value">318</span></div>
+              <div class="doc-bars__row"><span>Partner</span><span class="doc-bars__bar" style="width: 50%; background: var(--color-data-3)"></span><span class="doc-bars__value">204</span></div>
+              <div class="doc-bars__row"><span>Retail</span><span class="doc-bars__bar" style="width: 38%; background: var(--color-data-4)"></span><span class="doc-bars__value">156</span></div>
+              <div class="doc-bars__row"><span>Phone</span><span class="doc-bars__bar" style="width: 21%; background: var(--color-data-5)"></span><span class="doc-bars__value">87</span></div>
+              <div class="doc-bars__row"><span>Other</span><span class="doc-bars__bar" style="width: 10%; background: var(--color-data-6)"></span><span class="doc-bars__value">41</span></div>
+            </div>
+            <p class="text-body-sm text-secondary">Categorical colors identify series; labels carry the values, so nothing depends on color alone.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="doc-section" id="type" aria-labelledby="type-title">
+        <div class="doc-section__head">
+          <h1 id="type-title">Typography</h1>
+          <p>Native font stacks with CJK fallbacks. UI body text is 14px; long-form reading uses 16px at a 68ch measure.</p>
+        </div>
+        <div class="panel doc-specimen">
+          <div class="doc-type"><div class="doc-type__meta"><strong>Display</strong>48 / 1.1 / 600</div><div class="text-display">Quarterly shipments</div></div>
+          <div class="doc-type"><div class="doc-type__meta"><strong>Title L</strong>30 / 1.2 / 600</div><div class="text-title-lg">Warehouse capacity</div></div>
+          <div class="doc-type"><div class="doc-type__meta"><strong>Title M</strong>24 / 1.25 / 600</div><div class="text-title-md">Inbound orders</div></div>
+          <div class="doc-type"><div class="doc-type__meta"><strong>Title S</strong>18 / 1.35 / 600</div><div class="text-title-sm">Carrier settings</div></div>
+          <div class="doc-type"><div class="doc-type__meta"><strong>Body L</strong>16 / 1.6 / 400</div><div class="text-body-lg">Shipments that miss the cut-off move to the next pickup window and keep their original priority.</div></div>
+          <div class="doc-type"><div class="doc-type__meta"><strong>Body</strong>14 / 1.5 / 400</div><div class="text-body">Each pallet record lists its dock, carrier and the time it was scanned at the gate.</div></div>
+          <div class="doc-type"><div class="doc-type__meta"><strong>Body S</strong>13 / 1.45 / 400</div><div class="text-body-sm">Updated 4 minutes ago · 1,284 records</div></div>
+          <div class="doc-type"><div class="doc-type__meta"><strong>Label</strong>13 / 1.3 / 500</div><div class="text-label">Delivery window</div></div>
+          <div class="doc-type"><div class="doc-type__meta"><strong>Caption</strong>12 / 1.35 / 400</div><div class="text-caption text-secondary">Times shown in UTC+08:00</div></div>
+          <div class="doc-type"><div class="doc-type__meta"><strong>Overline</strong>12 / caps / 600</div><div class="text-overline text-tertiary">Fulfilment</div></div>
+          <div class="doc-type"><div class="doc-type__meta"><strong>Code</strong>13 / 1.5 / mono</div><div><code>SHP-2026-11-0418</code></div></div>
+          <div class="doc-type" lang="zh-CN"><div class="doc-type__meta"><strong>中文</strong>14 / 1.5</div><div class="text-body">本周入库 1,284 件，其中 36 件待复核；表格、表单与导航在中英文混排时保持一致的行高。</div></div>
+        </div>
+      </section>
+
+      <section class="doc-section" id="space" aria-labelledby="space-title">
+        <div class="doc-section__head">
+          <h1 id="space-title">Space, shape, depth</h1>
+          <p>A 4px spacing grid, a short radius scale and four elevation levels. Dark surfaces rely on lighter fills and borders more than shadows.</p>
+        </div>
+        <div class="grid" style="--grid-min: 18rem; --grid-gap: var(--space-6)">
+          <div class="panel doc-specimen">
+            <div class="doc-scale" aria-label="Spacing scale">
+              <div class="doc-scale__row"><span>space-1</span><span>4px</span><span class="doc-scale__bar" style="width: 4px"></span></div>
+              <div class="doc-scale__row"><span>space-2</span><span>8px</span><span class="doc-scale__bar" style="width: 8px"></span></div>
+              <div class="doc-scale__row"><span>space-3</span><span>12px</span><span class="doc-scale__bar" style="width: 12px"></span></div>
+              <div class="doc-scale__row"><span>space-4</span><span>16px</span><span class="doc-scale__bar" style="width: 16px"></span></div>
+              <div class="doc-scale__row"><span>space-6</span><span>24px</span><span class="doc-scale__bar" style="width: 24px"></span></div>
+              <div class="doc-scale__row"><span>space-8</span><span>32px</span><span class="doc-scale__bar" style="width: 32px"></span></div>
+              <div class="doc-scale__row"><span>space-12</span><span>48px</span><span class="doc-scale__bar" style="width: 48px"></span></div>
+              <div class="doc-scale__row"><span>space-16</span><span>64px</span><span class="doc-scale__bar" style="width: 64px"></span></div>
+              <div class="doc-scale__row"><span>space-24</span><span>96px</span><span class="doc-scale__bar" style="width: 96px"></span></div>
+            </div>
+          </div>
+          <div class="panel doc-specimen">
+            <div class="doc-tiles" style="--grid-min: 6rem">
+              <div class="doc-tile" style="border-radius: var(--radius-sm)">radius-sm 4</div>
+              <div class="doc-tile" style="border-radius: var(--radius-md)">radius-md 8</div>
+              <div class="doc-tile" style="border-radius: var(--radius-lg)">radius-lg 12</div>
+              <div class="doc-tile" style="border-radius: var(--radius-xl)">radius-xl 16</div>
+            </div>
+          </div>
+        </div>
+        <div class="doc-tiles" style="padding: var(--space-6); border-radius: var(--radius-xl); background: var(--color-bg-sunken)">
+          <div class="doc-tile doc-elev" style="box-shadow: var(--shadow-xs)">shadow-xs</div>
+          <div class="doc-tile doc-elev" style="box-shadow: var(--shadow-sm)">shadow-sm</div>
+          <div class="doc-tile doc-elev" style="box-shadow: var(--shadow-md)">shadow-md</div>
+          <div class="doc-tile doc-elev" style="box-shadow: var(--shadow-lg)">shadow-lg</div>
+        </div>
+      </section>
+
+      <section class="doc-section" id="buttons" aria-labelledby="buttons-title">
+        <div class="doc-section__head">
+          <h1 id="buttons-title">Buttons</h1>
+          <p>One primary action per view. Every variant defines hover, pressed, focus, disabled and busy states.</p>
+        </div>
+        <div class="panel doc-specimen doc-matrix">
+          <div class="doc-row doc-row--head" aria-hidden="true">
+            <span></span><span class="doc-head">Default</span><span class="doc-head">Hover</span><span class="doc-head">Pressed</span><span class="doc-head">Focus</span><span class="doc-head">Disabled</span><span class="doc-head">Busy</span>
+          </div>
+          <div class="doc-row">
+            <span class="doc-row__label">Primary</span>
+            <button type="button" class="btn btn--primary">Save changes</button>
+            <button type="button" class="btn btn--primary is-hover">Save changes</button>
+            <button type="button" class="btn btn--primary is-active">Save changes</button>
+            <button type="button" class="btn btn--primary is-focus">Save changes</button>
+            <button type="button" class="btn btn--primary" disabled>Save changes</button>
+            <button type="button" class="btn btn--primary" aria-busy="true">Save changes</button>
+          </div>
+          <div class="doc-row">
+            <span class="doc-row__label">Secondary</span>
+            <button type="button" class="btn">Export</button>
+            <button type="button" class="btn is-hover">Export</button>
+            <button type="button" class="btn is-active">Export</button>
+            <button type="button" class="btn is-focus">Export</button>
+            <button type="button" class="btn" disabled>Export</button>
+            <button type="button" class="btn" aria-busy="true">Export</button>
+          </div>
+          <div class="doc-row">
+            <span class="doc-row__label">Ghost</span>
+            <button type="button" class="btn btn--ghost">Cancel</button>
+            <button type="button" class="btn btn--ghost is-hover">Cancel</button>
+            <button type="button" class="btn btn--ghost is-active">Cancel</button>
+            <button type="button" class="btn btn--ghost is-focus">Cancel</button>
+            <button type="button" class="btn btn--ghost" disabled>Cancel</button>
+            <button type="button" class="btn btn--ghost" aria-busy="true">Cancel</button>
+          </div>
+          <div class="doc-row">
+            <span class="doc-row__label">Danger</span>
+            <button type="button" class="btn btn--danger">Delete</button>
+            <button type="button" class="btn btn--danger is-hover">Delete</button>
+            <button type="button" class="btn btn--danger is-active">Delete</button>
+            <button type="button" class="btn btn--danger is-focus">Delete</button>
+            <button type="button" class="btn btn--danger" disabled>Delete</button>
+            <button type="button" class="btn btn--danger" aria-busy="true">Delete</button>
+          </div>
+        </div>
+        <div class="panel doc-specimen">
+          <div class="cluster" style="--cluster-gap: var(--space-3)">
+            <button type="button" class="btn btn--primary btn--sm"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>New</button>
+            <button type="button" class="btn btn--primary"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>New shipment</button>
+            <button type="button" class="btn btn--primary btn--lg">New shipment</button>
+            <button type="button" class="btn"><svg class="icon" aria-hidden="true"><use href="#i-download"/></svg>Download CSV</button>
+            <button type="button" class="btn btn--icon" aria-label="Search"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg></button>
+            <button type="button" class="btn btn--icon btn--ghost" aria-label="More actions"><svg class="icon" aria-hidden="true"><use href="#i-more"/></svg></button>
+            <button type="button" class="btn btn--icon btn--ghost btn--sm" aria-label="Close"><svg class="icon" aria-hidden="true"><use href="#i-x"/></svg></button>
+          </div>
+        </div>
+      </section>
+
+      <section class="doc-section" id="forms" aria-labelledby="forms-title">
+        <div class="doc-section__head">
+          <h1 id="forms-title">Form controls</h1>
+          <p>Visible labels above fields, hints before errors, and errors that say how to recover. Field borders keep 3:1 contrast.</p>
+        </div>
+        <div class="panel doc-specimen">
+          <div class="grid" style="--grid-min: 15rem; --grid-gap: var(--space-6)">
+            <div class="field">
+              <label class="field__label" for="f-name">Warehouse name</label>
+              <input class="input" id="f-name" value="Harbor Road DC">
+            </div>
+            <div class="field">
+              <label class="field__label" for="f-code">Dock code <span class="field__optional">(optional)</span></label>
+              <input class="input" id="f-code" placeholder="D-12" aria-describedby="f-code-hint">
+              <span class="field__hint" id="f-code-hint">Letters, numbers and dashes.</span>
+            </div>
+            <div class="field">
+              <label class="field__label" for="f-focus">Contact email</label>
+              <input class="input is-focus" id="f-focus" value="ops@example.com">
+            </div>
+            <div class="field">
+              <label class="field__label" for="f-cap">Daily capacity</label>
+              <input class="input" id="f-cap" value="-40" aria-invalid="true" aria-describedby="f-cap-error">
+              <span class="field__error" id="f-cap-error"><svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>Enter a number of pallets from 0 to 5,000.</span>
+            </div>
+            <div class="field">
+              <label class="field__label" for="f-region">Region</label>
+              <select class="select" id="f-region"><option>Asia Pacific</option><option>Europe</option><option>North America</option></select>
+            </div>
+            <div class="field">
+              <label class="field__label" for="f-dis">Account owner</label>
+              <input class="input" id="f-dis" value="Ana Souza" disabled>
+            </div>
+            <div class="field" style="grid-column: 1 / -1">
+              <label class="field__label" for="f-notes">Handling notes</label>
+              <textarea class="textarea" id="f-notes" placeholder="Fragile items, temperature limits, access codes"></textarea>
+            </div>
+          </div>
+          <hr>
+          <div class="grid" style="--grid-min: 13rem">
+            <fieldset class="stack" style="--stack-gap: var(--space-1); border: 0; padding: 0; margin: 0">
+              <legend class="field__label" style="margin-bottom: var(--space-2)">Notify me about</legend>
+              <label class="check"><input type="checkbox" checked>Delayed pickups</label>
+              <label class="check"><input type="checkbox">Weekly summary</label>
+              <label class="check"><input type="checkbox" disabled>Billing changes</label>
+            </fieldset>
+            <fieldset class="stack" style="--stack-gap: var(--space-1); border: 0; padding: 0; margin: 0">
+              <legend class="field__label" style="margin-bottom: var(--space-2)">Label size</legend>
+              <label class="check"><input type="radio" name="label-size" checked>4 × 6 in</label>
+              <label class="check"><input type="radio" name="label-size">A6</label>
+              <label class="check"><input type="radio" name="label-size" disabled>Letter</label>
+            </fieldset>
+            <div class="stack" style="--stack-gap: var(--space-1)">
+              <span class="field__label" style="margin-bottom: var(--space-2)">Automation</span>
+              <label class="check"><input class="switch" type="checkbox" role="switch" checked>Auto-assign docks</label>
+              <label class="check"><input class="switch" type="checkbox" role="switch">Hold on weight mismatch</label>
+              <label class="check"><input class="switch" type="checkbox" role="switch" disabled>Carrier API sync</label>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="doc-section" id="feedback" aria-labelledby="feedback-title">
+        <div class="doc-section__head">
+          <h1 id="feedback-title">Feedback</h1>
+          <p>Status uses icon or text plus color. Inline alerts explain what happened and what to do next.</p>
+        </div>
+        <div class="panel doc-specimen stack" style="--stack-gap: var(--space-5)">
+          <div class="cluster">
+            <span class="badge">Draft</span>
+            <span class="badge badge--accent"><span class="badge__dot"></span>In transit</span>
+            <span class="badge badge--success"><span class="badge__dot"></span>Delivered</span>
+            <span class="badge badge--warning"><span class="badge__dot"></span>Delayed</span>
+            <span class="badge badge--danger"><span class="badge__dot"></span>Failed</span>
+            <span class="badge badge--info">Scheduled</span>
+          </div>
+          <div class="grid" style="--grid-min: 20rem">
+            <div class="alert alert--info" role="status">
+              <svg class="icon" aria-hidden="true"><use href="#i-info"/></svg>
+              <div><div class="alert__title">Pickup moved to 16:30</div><div class="alert__body">The carrier changed the window for 12 shipments.</div></div>
+            </div>
+            <div class="alert alert--success" role="status">
+              <svg class="icon" aria-hidden="true"><use href="#i-check-circle"/></svg>
+              <div><div class="alert__title">Manifest submitted</div><div class="alert__body">38 labels were generated and sent to the printer.</div></div>
+            </div>
+            <div class="alert alert--warning" role="status">
+              <svg class="icon" aria-hidden="true"><use href="#i-alert"/></svg>
+              <div><div class="alert__title">Dock D-4 is near capacity</div><div class="alert__body">Route new arrivals to D-6 until 18:00.</div></div>
+            </div>
+            <div class="alert alert--danger" role="alert">
+              <svg class="icon" aria-hidden="true"><use href="#i-x-circle"/></svg>
+              <div><div class="alert__title">Label printer is offline</div><div class="alert__body">Check the USB connection, then retry printing.</div></div>
+              <button type="button" class="btn btn--sm">Retry</button>
+            </div>
+          </div>
+          <div class="grid" style="--grid-min: 16rem; align-items: center">
+            <div class="toast" role="status"><span>Shipment SHP-0418 archived</span><button type="button" class="toast__action">Undo</button></div>
+            <div class="stack" style="--stack-gap: var(--space-2)">
+              <div class="split text-body-sm"><span id="upload-label">Uploading manifest</span><span class="num text-secondary">64%</span></div>
+              <progress class="progress" value="64" max="100" aria-labelledby="upload-label"></progress>
+            </div>
+            <div class="stack" style="--stack-gap: var(--space-2)" aria-hidden="true">
+              <span class="skeleton" style="width: 70%"></span>
+              <span class="skeleton" style="width: 92%"></span>
+              <span class="skeleton" style="width: 48%"></span>
+            </div>
+            <div class="cluster text-secondary" role="status"><span class="spinner" aria-hidden="true"></span>Loading carriers</div>
+          </div>
+        </div>
+      </section>
+
+      <section class="doc-section" id="navigation" aria-labelledby="navigation-title">
+        <div class="doc-section__head">
+          <h1 id="navigation-title">Navigation</h1>
+          <p>Current location is always marked. Menus keep a visible focus ring for keyboard use.</p>
+        </div>
+        <div class="grid" style="--grid-min: 22rem; --grid-gap: var(--space-6)">
+          <div class="panel doc-specimen stack" style="--stack-gap: var(--space-5)">
+            <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="#navigation">Warehouses</a><svg class="icon" aria-hidden="true"><use href="#i-chevron-right"/></svg><a href="#navigation">Harbor Road DC</a><svg class="icon" aria-hidden="true"><use href="#i-chevron-right"/></svg><span aria-current="page">Docks</span></nav>
+            <div class="tabs" role="tablist" aria-label="Shipment views">
+              <button type="button" class="tab" role="tab" aria-selected="true">Overview</button>
+              <button type="button" class="tab" role="tab" aria-selected="false">Items</button>
+              <button type="button" class="tab" role="tab" aria-selected="false">History</button>
+              <button type="button" class="tab is-hover" role="tab" aria-selected="false">Documents</button>
+            </div>
+            <div class="segmented" role="group" aria-label="Range">
+              <button type="button" class="segmented__item" aria-pressed="false">Day</button>
+              <button type="button" class="segmented__item" aria-pressed="true">Week</button>
+              <button type="button" class="segmented__item" aria-pressed="false">Month</button>
+            </div>
+          </div>
+          <div class="panel doc-specimen">
+            <nav class="nav" aria-label="Sample sidebar">
+              <a class="nav__item" href="#navigation"><svg class="icon" aria-hidden="true"><use href="#i-home"/></svg>Overview</a>
+              <a class="nav__item" href="#navigation" aria-current="page"><svg class="icon" aria-hidden="true"><use href="#i-inbox"/></svg>Shipments<span class="nav__count">128</span></a>
+              <a class="nav__item is-hover" href="#navigation"><svg class="icon" aria-hidden="true"><use href="#i-file"/></svg>Invoices<span class="nav__count">12</span></a>
+              <a class="nav__item" href="#navigation"><svg class="icon" aria-hidden="true"><use href="#i-users"/></svg>Carriers</a>
+              <a class="nav__item" href="#navigation"><svg class="icon" aria-hidden="true"><use href="#i-sliders"/></svg>Settings</a>
+            </nav>
+          </div>
+          <div class="panel doc-specimen" style="background: var(--color-bg-sunken)">
+            <div class="menu" role="menu" aria-label="Shipment actions">
+              <button type="button" class="menu__item" role="menuitem">Edit details<span class="menu__shortcut">E</span></button>
+              <button type="button" class="menu__item is-hover" role="menuitem">Duplicate<span class="menu__shortcut">⌘D</span></button>
+              <button type="button" class="menu__item" role="menuitem">Print label</button>
+              <div class="menu__separator" role="separator"></div>
+              <button type="button" class="menu__item menu__item--danger" role="menuitem"><svg class="icon" aria-hidden="true"><use href="#i-trash"/></svg>Delete</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="doc-section" id="data" aria-labelledby="data-title">
+        <div class="doc-section__head">
+          <h1 id="data-title">Data display</h1>
+          <p>Numbers use tabular figures and align to the end. Status keeps a text label.</p>
+        </div>
+        <div class="grid" style="--grid-min: 12rem">
+          <div class="panel doc-specimen stat"><span class="stat__label">Shipments today</span><span class="stat__value">1,284</span><span class="stat__delta">+6.2% vs last Monday</span></div>
+          <div class="panel doc-specimen stat"><span class="stat__label">On-time rate</span><span class="stat__value">97.4%</span><span class="stat__delta">Target 96%</span></div>
+          <div class="panel doc-specimen stat"><span class="stat__label">Open exceptions</span><span class="stat__value">36</span><span class="stat__delta">9 need review today</span></div>
+        </div>
+        <div class="table-wrap">
+          <table class="table">
+            <thead>
+              <tr>
+                <th scope="col">Shipment</th>
+                <th scope="col">Destination</th>
+                <th scope="col">Status</th>
+                <th scope="col" aria-sort="ascending"><button type="button" class="sort">Pickup<svg class="icon" aria-hidden="true"><use href="#i-chevron-down"/></svg></button></th>
+                <th scope="col" class="num">Weight (kg)</th>
+                <th scope="col" class="num">Value (USD)</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td><code>SHP-0412</code></td><td>Busan, KR</td><td><span class="badge badge--success"><span class="badge__dot"></span>Delivered</span></td><td class="muted">Nov 21, 09:10</td><td class="num">412.0</td><td class="num">18,240.00</td></tr>
+              <tr aria-selected="true"><td><code>SHP-0415</code></td><td>Rotterdam, NL</td><td><span class="badge badge--accent"><span class="badge__dot"></span>In transit</span></td><td class="muted">Nov 22, 14:30</td><td class="num">1,086.5</td><td class="num">64,905.20</td></tr>
+              <tr class="is-hover"><td><code>SHP-0417</code></td><td>Long Beach, US</td><td><span class="badge badge--warning"><span class="badge__dot"></span>Delayed</span></td><td class="muted">Nov 23, 08:00</td><td class="num">96.2</td><td class="num">3,118.75</td></tr>
+              <tr><td><code>SHP-0418</code></td><td>Kraków, PL</td><td><span class="badge"><span class="badge__dot"></span>Draft</span></td><td class="muted">Nov 24, 16:45</td><td class="num">8.4</td><td class="num">412.90</td></tr>
+              <tr><td><code>SHP-0421</code></td><td>São Paulo, BR</td><td><span class="badge badge--danger"><span class="badge__dot"></span>Failed</span></td><td class="muted">Nov 24, 18:20</td><td class="num">2,350.0</td><td class="num">121,600.00</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section class="doc-section" id="overlays" aria-labelledby="overlays-title">
+        <div class="doc-section__head">
+          <h1 id="overlays-title">Overlays and empty states</h1>
+          <p>Dialogs state the consequence and name the action. Empty states say what is missing and offer the next step.</p>
+        </div>
+        <div class="grid" style="--grid-min: 22rem; --grid-gap: var(--space-6)">
+          <div class="doc-stage">
+            <dialog class="dialog" open aria-labelledby="dlg-title">
+              <div class="dialog__header"><h2 class="dialog__title" id="dlg-title">Delete 3 shipments?</h2></div>
+              <div class="dialog__body">Their labels will be voided and carriers notified. This can’t be undone.</div>
+              <div class="dialog__footer">
+                <button type="button" class="btn btn--ghost">Cancel</button>
+                <button type="button" class="btn btn--danger">Delete shipments</button>
+              </div>
+            </dialog>
+          </div>
+          <div class="panel">
+            <div class="empty">
+              <div class="empty__icon"><svg class="icon" aria-hidden="true"><use href="#i-inbox"/></svg></div>
+              <h2 class="empty__title">No shipments match these filters</h2>
+              <p class="empty__body">Try a wider date range or clear the carrier filter.</p>
+              <div class="empty__actions"><button type="button" class="btn">Clear filters</button></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="doc-section" id="composition" aria-labelledby="composition-title">
+        <div class="doc-section__head">
+          <h1 id="composition-title">Composition</h1>
+          <p>The shell adapts by platform: sidebar on web and desktop, bottom tab bar on iOS and Android or below 768px.</p>
+        </div>
+        <div class="doc-frame">
+          <div class="app">
+            <aside class="app__sidebar" aria-label="Sample workspace">
+              <div class="app__brand"><span class="doc-bar__mark"><svg class="icon" aria-hidden="true"><use href="#i-layers"/></svg></span>Harbor Road DC</div>
+              <nav class="nav" aria-label="Sample primary">
+                <a class="nav__item" href="#composition"><svg class="icon" aria-hidden="true"><use href="#i-home"/></svg>Overview</a>
+                <a class="nav__item" href="#composition" aria-current="page"><svg class="icon" aria-hidden="true"><use href="#i-inbox"/></svg>Shipments</a>
+                <a class="nav__item" href="#composition"><svg class="icon" aria-hidden="true"><use href="#i-chart"/></svg>Reports</a>
+              </nav>
+            </aside>
+            <div class="app__header">
+              <h2 class="app__title">Shipments</h2>
+              <div class="app__actions">
+                <button type="button" class="btn btn--icon btn--ghost" aria-label="Search shipments"><svg class="icon" aria-hidden="true"><use href="#i-search"/></svg></button>
+                <button type="button" class="btn btn--primary"><svg class="icon" aria-hidden="true"><use href="#i-plus"/></svg>New</button>
+              </div>
+            </div>
+            <div class="app__main stack">
+              <div class="grid" style="--grid-min: 9rem">
+                <div class="panel doc-specimen stat" style="padding: var(--space-4)"><span class="stat__label">Today</span><span class="stat__value">1,284</span></div>
+                <div class="panel doc-specimen stat" style="padding: var(--space-4)"><span class="stat__label">Delayed</span><span class="stat__value">17</span></div>
+                <div class="panel doc-specimen stat" style="padding: var(--space-4)"><span class="stat__label">Exceptions</span><span class="stat__value">36</span></div>
+              </div>
+              <div class="table-wrap">
+                <table class="table">
+                  <thead><tr><th scope="col">Shipment</th><th scope="col">Status</th><th scope="col" class="num">Weight (kg)</th></tr></thead>
+                  <tbody>
+                    <tr><td><code>SHP-0415</code></td><td><span class="badge badge--accent"><span class="badge__dot"></span>In transit</span></td><td class="num">1,086.5</td></tr>
+                    <tr><td><code>SHP-0417</code></td><td><span class="badge badge--warning"><span class="badge__dot"></span>Delayed</span></td><td class="num">96.2</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+            <nav class="app__tabbar" aria-label="Sample tabs">
+              <a class="tabbar__item" href="#composition"><span class="tabbar__glyph"><svg class="icon" aria-hidden="true"><use href="#i-home"/></svg></span>Overview</a>
+              <a class="tabbar__item" href="#composition" aria-current="page"><span class="tabbar__glyph"><svg class="icon" aria-hidden="true"><use href="#i-inbox"/></svg></span>Shipments</a>
+              <a class="tabbar__item" href="#composition"><span class="tabbar__glyph"><svg class="icon" aria-hidden="true"><use href="#i-chart"/></svg></span>Reports</a>
+            </nav>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script>
+    (function gallery() {
+      "use strict";
+      function channel(value) {
+        var c = value / 255;
+        return c <= 0.04045 ? c / 12.92 : Math.pow((c + 0.055) / 1.055, 2.4);
+      }
+      function parse(color) {
+        var match = /rgba?\(([^)]+)\)/.exec(color);
+        if (!match) return null;
+        var parts = match[1].split(/[\s,/]+/).filter(Boolean).map(Number);
+        return { r: parts[0], g: parts[1], b: parts[2], a: parts.length > 3 ? parts[3] : 1 };
+      }
+      function luminance(c) { return 0.2126 * channel(c.r) + 0.7152 * channel(c.g) + 0.0722 * channel(c.b); }
+      function backgroundOf(element) {
+        for (var node = element; node && node.nodeType === 1; node = node.parentElement) {
+          var parsed = parse(getComputedStyle(node).backgroundColor);
+          if (parsed && parsed.a > 0.99) return parsed;
+        }
+        return parse(getComputedStyle(document.body).backgroundColor);
+      }
+      function updateContrast() {
+        document.querySelectorAll("[data-contrast]").forEach(function measure(sample) {
+          var fg = parse(getComputedStyle(sample).color);
+          var bg = backgroundOf(sample);
+          var out = sample.querySelector("output");
+          if (!fg || !bg || !out) return;
+          var lighter = Math.max(luminance(fg), luminance(bg));
+          var darker = Math.min(luminance(fg), luminance(bg));
+          var ratio = (lighter + 0.05) / (darker + 0.05);
+          out.textContent = ratio.toFixed(2) + ":1 " + (ratio >= 7 ? "AAA" : ratio >= 4.5 ? "AA" : "low");
+        });
+      }
+      function syncControls(detail) {
+        var values = { theme: detail.theme || "system", density: detail.density || "default", platform: detail.platform || "web" };
+        document.querySelectorAll("[data-setting]").forEach(function mark(button) {
+          button.setAttribute("aria-pressed", String(values[button.dataset.setting] === button.dataset.value));
+        });
+        requestAnimationFrame(updateContrast);
+      }
+      document.addEventListener("pfui:params", function onParams(event) { syncControls(event.detail); });
+      document.addEventListener("click", function onClick(event) {
+        var button = event.target.closest("[data-setting]");
+        if (!button) return;
+        var next = {};
+        next[button.dataset.setting] = button.dataset.value;
+        window.pfuiParams.apply(next, { updateUrl: true });
+      });
+      window.matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function onScheme() {
+        requestAnimationFrame(updateContrast);
+      });
+      syncControls(window.pfuiParams.get());
+    })();
+  </script>
+</body>
+</html>

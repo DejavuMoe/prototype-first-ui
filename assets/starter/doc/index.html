@@ -1,0 +1,54 @@
+<!doctype html>
+<html lang="{{LANG}}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{doc.title}}</title>
+  <link rel="stylesheet" href="styles/tokens.css">
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="document.css">
+  <script src="styles/params.js"></script>
+</head>
+<body class="doc">
+  <main class="page" id="main">
+    <header class="doc__header">
+      <p class="doc__kicker">{{doc.type}}</p>
+      <h1 class="doc__title">{{doc.title}}</h1>
+      <p class="doc__meta">{{doc.author}} · <time datetime="{{DATE}}">{{doc.date}}</time></p>
+    </header>
+
+    <section class="doc__summary" aria-labelledby="summary-title">
+      <h2 id="summary-title">{{summary.heading}}</h2>
+      <p>{{summary.body}}</p>
+    </section>
+
+    <section aria-labelledby="section-1-title">
+      <h2 id="section-1-title">{{section-1.heading}}</h2>
+      <p>{{section-1.body}}</p>
+      <figure class="doc__figure">
+        <div class="doc__figure-frame" role="img" aria-label="{{figure-1.alt}}"></div>
+        <figcaption><span class="doc__label">{{figure-1.label}}</span> {{figure-1.caption}}</figcaption>
+      </figure>
+    </section>
+
+    <section aria-labelledby="section-2-title">
+      <h2 id="section-2-title">{{section-2.heading}}</h2>
+      <p>{{section-2.body}}</p>
+      <table class="doc__table">
+        <caption><span class="doc__label">{{table-1.label}}</span> {{table-1.caption}}</caption>
+        <thead>
+          <tr><th scope="col">{{table-1.column-1}}</th><th scope="col" class="num">{{table-1.column-2}}</th><th scope="col" class="num">{{table-1.column-3}}</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>{{table-1.row-1}}</td><td class="num">{{table-1.value-1a}}</td><td class="num">{{table-1.value-1b}}</td></tr>
+          <tr><td>{{table-1.row-2}}</td><td class="num">{{table-1.value-2a}}</td><td class="num">{{table-1.value-2b}}</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <footer class="doc__footer">
+      <p>{{doc.sources}}</p>
+    </footer>
+  </main>
+</body>
+</html>

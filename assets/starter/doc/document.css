@@ -1,0 +1,67 @@
+/*
+ * Print-first document ({{PAGE_SIZE}}). On screen it previews as a sheet of
+ * paper; in print the sheet styling falls away and @page owns the geometry.
+ * Serif body for long reading, sans headings, tabular figures in tables.
+ */
+@page {
+  size: {{PAGE_SIZE}};
+  margin: 20mm 18mm 22mm;
+  @bottom-right {
+    content: counter(page) " / " counter(pages);
+    color: var(--color-text-tertiary);
+    font-family: var(--font-family-sans);
+    font-size: 8.5pt;
+  }
+}
+
+body.doc { background: var(--color-bg-sunken); }
+
+.page {
+  box-sizing: border-box;
+  width: {{PAGE_WIDTH}};
+  min-height: {{PAGE_HEIGHT}};
+  margin: var(--space-8) auto;
+  padding: 20mm 18mm 22mm;
+  background: var(--color-bg-surface);
+  box-shadow: var(--shadow-md);
+  color: var(--color-text-primary);
+  font-family: var(--font-family-serif);
+  font-size: 10.5pt;
+  line-height: 1.55;
+  hyphens: auto;
+}
+
+.page :where(h1, h2, h3) { font-family: var(--font-family-sans); break-after: avoid; text-wrap: balance; }
+.page h2 { margin: 18pt 0 6pt; font-size: 13.5pt; line-height: 1.3; }
+.page h3 { margin: 12pt 0 4pt; font-size: 11pt; }
+.page p { margin: 0 0 8pt; orphans: 3; widows: 3; text-wrap: pretty; }
+
+.doc__header { margin-bottom: 18pt; padding-bottom: 12pt; border-bottom: 1.5pt solid var(--color-text-primary); }
+.doc__kicker { margin: 0 0 4pt; color: var(--color-accent-text); font-family: var(--font-family-sans); font-size: 9pt; font-weight: var(--font-weight-semibold); letter-spacing: 0.08em; text-transform: uppercase; }
+.doc__title { font-size: 24pt; line-height: 1.12; letter-spacing: -0.015em; }
+.doc__meta { margin-top: 6pt; color: var(--color-text-secondary); font-family: var(--font-family-sans); font-size: 9.5pt; }
+
+.doc__summary { margin-bottom: 12pt; padding: 10pt 12pt; border-inline-start: 3pt solid var(--color-accent-default); background: var(--color-accent-subtle); }
+.doc__summary h2 { margin-top: 0; }
+
+.doc__figure { margin: 12pt 0; break-inside: avoid; }
+.doc__figure-frame { aspect-ratio: 16 / 9; border: 0.75pt solid var(--color-border-strong); background: var(--color-bg-sunken); }
+.doc__figure figcaption, .doc__table caption { margin-top: 6pt; color: var(--color-text-secondary); font-family: var(--font-family-sans); font-size: 9pt; text-align: start; }
+.doc__label { color: var(--color-text-primary); font-weight: var(--font-weight-semibold); }
+
+.doc__table { width: 100%; margin: 12pt 0; border-collapse: collapse; caption-side: bottom; font-family: var(--font-family-sans); font-size: 9.5pt; break-inside: avoid; }
+.doc__table th { padding: 4pt 6pt; border-bottom: 1pt solid var(--color-text-primary); font-weight: var(--font-weight-semibold); text-align: start; }
+.doc__table td { padding: 4pt 6pt; border-bottom: 0.5pt solid var(--color-border-default); }
+.doc__table .num { text-align: end; font-variant-numeric: tabular-nums; }
+
+.doc__footer { margin-top: 18pt; padding-top: 8pt; border-top: 0.75pt solid var(--color-border-default); color: var(--color-text-secondary); font-size: 9pt; }
+
+@media screen and (max-width: 860px) {
+  .page { width: auto; min-height: 0; margin: 0; padding: var(--space-6) var(--space-5); box-shadow: none; }
+}
+
+@media print {
+  body.doc { background: none; }
+  .page { width: auto; min-height: 0; margin: 0; padding: 0; box-shadow: none; }
+  .doc__summary { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

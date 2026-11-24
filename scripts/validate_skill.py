@@ -363,10 +363,37 @@ def validate_directory(root: Path, *, run_node: bool = True) -> Validation:
         "references/workflow.md",
         "references/harness-adaptation.md",
         "references/cleanup-policy.md",
+        "references/design-system.md",
+        "references/ui-design.md",
+        "references/visual-communication.md",
+        "references/data-visualization.md",
+        "references/delivery.md",
+        "references/design-review.md",
+        "references/design-quality.md",
+        "references/platforms.md",
+        "references/tooling.md",
     }
     for relative in sorted(required_refs):
         if not (root / relative).is_file():
             validation.error("Missing required reference: %s" % relative)
+    required_tools = {
+        "scripts/pfui.py",
+        "scripts/design_lint.py",
+        "scripts/design_tokens.py",
+        "assets/review/review.html",
+        "assets/starter/system/tokens.json",
+        "assets/starter/system/tokens.css",
+        "assets/starter/system/base.css",
+        "assets/starter/system/params.js",
+        "assets/starter/system/components.html",
+        "assets/starter/app/index.html",
+        "assets/starter/site/index.html",
+        "assets/starter/deck/index.html",
+        "assets/starter/doc/index.html",
+    }
+    for relative in sorted(required_tools):
+        if not (root / relative).is_file():
+            validation.error("Missing required tool or starter file: %s" % relative)
 
     if run_node and javascript_files:
         node = shutil.which("node")

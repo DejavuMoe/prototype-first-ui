@@ -1,0 +1,5 @@
+/*
+ * Surface-specific styles. Consume tokens (var(--color-*), var(--space-*), ...)
+ * and the shared components in styles/base.css. Promote anything reused across
+ * screens into the design system instead of growing this file.
+ */

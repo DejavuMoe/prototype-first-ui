@@ -1,0 +1,78 @@
+<!doctype html>
+<html lang="{{LANG}}">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{deck.title}}</title>
+  <link rel="stylesheet" href="styles/tokens.css">
+  <link rel="stylesheet" href="styles/base.css">
+  <link rel="stylesheet" href="deck.css">
+  <script src="styles/params.js"></script>
+  <script src="deck.js" defer></script>
+</head>
+<body class="deck">
+  <main class="deck__viewport" id="main">
+    <section class="slide slide--title" aria-labelledby="s1-title">
+      <p class="slide__kicker">{{deck.context}}</p>
+      <div class="slide__body">
+        <h1 class="slide__title" id="s1-title">{{deck.title}}</h1>
+        <p class="slide__lede">{{deck.subtitle}}</p>
+      </div>
+      <footer class="slide__footer"><span>{{deck.presenter}}</span><span>{{deck.date}}</span></footer>
+      <aside class="notes">{{notes.slide-1}}</aside>
+    </section>
+
+    <section class="slide" aria-labelledby="s2-title">
+      <h2 class="slide__title" id="s2-title">{{slide-2.title}}</h2>
+      <ol class="slide__list">
+        <li>{{slide-2.point-1}}</li>
+        <li>{{slide-2.point-2}}</li>
+        <li>{{slide-2.point-3}}</li>
+      </ol>
+      <aside class="notes">{{notes.slide-2}}</aside>
+    </section>
+
+    <section class="slide slide--statement" aria-labelledby="s3-title">
+      <h2 class="slide__statement" id="s3-title">{{slide-3.statement}}</h2>
+      <p class="slide__source">{{slide-3.source}}</p>
+      <aside class="notes">{{notes.slide-3}}</aside>
+    </section>
+
+    <section class="slide slide--split" aria-labelledby="s4-title">
+      <div class="slide__body">
+        <h2 class="slide__title" id="s4-title">{{slide-4.title}}</h2>
+        <p class="slide__text">{{slide-4.body}}</p>
+      </div>
+      <figure class="slide__figure">
+        <div class="slide__figure-frame" role="img" aria-label="{{slide-4.figure-alt}}"></div>
+        <figcaption>{{slide-4.caption}}</figcaption>
+      </figure>
+      <aside class="notes">{{notes.slide-4}}</aside>
+    </section>
+
+    <section class="slide slide--metrics" aria-labelledby="s5-title">
+      <h2 class="slide__title" id="s5-title">{{slide-5.title}}</h2>
+      <div class="slide__metrics">
+        <div class="metric"><span class="metric__value">{{metric-1.value}}</span><span class="metric__label">{{metric-1.label}}</span></div>
+        <div class="metric"><span class="metric__value">{{metric-2.value}}</span><span class="metric__label">{{metric-2.label}}</span></div>
+        <div class="metric"><span class="metric__value">{{metric-3.value}}</span><span class="metric__label">{{metric-3.label}}</span></div>
+      </div>
+      <p class="slide__source">{{slide-5.source}}</p>
+      <aside class="notes">{{notes.slide-5}}</aside>
+    </section>
+
+    <section class="slide slide--closing" aria-labelledby="s6-title">
+      <div class="slide__body">
+        <h2 class="slide__title" id="s6-title">{{slide-6.title}}</h2>
+        <ul class="slide__list slide__list--plain">
+          <li>{{slide-6.next-1}}</li>
+          <li>{{slide-6.next-2}}</li>
+        </ul>
+      </div>
+      <footer class="slide__footer"><span>{{deck.contact}}</span></footer>
+      <aside class="notes">{{notes.slide-6}}</aside>
+    </section>
+  </main>
+  <div class="deck__notes" aria-live="polite"></div>
+</body>
+</html>

@@ -24,6 +24,10 @@ CASES = [
     "package-validation",
     "javascript-syntax",
     "bootstrap-safety",
+    "design-tokens",
+    "design-lint",
+    "starter-quality",
+    "pfui-cli",
 ]
 
 

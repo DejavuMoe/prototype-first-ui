@@ -1,9 +1,45 @@
 {
   "evals": [
     {
-      "name": "design-dependency-unavailable",
-      "prompt": "Audit the existing UI and then prototype an improvement. Baoyu-Design is not installed and cannot be downloaded.",
-      "expected_output": "The agent completes the independent capability audit and reports that prototype generation requires Baoyu-Design. It stops before dependent design generation.",
+      "name": "project-local-system-from-real-components",
+      "prompt": "Build a design system for this repository from its existing CSS tokens and component library. It must work for different AI agents; do not install global skills.",
+      "expected_output": "The agent enters system mode, reads actual tokens/exports and brand guidance, preserves their format, demonstrates relevant real component states and composition, documents consumption and gaps, and keeps all work project-local. It does not create a second token authority or require a proprietary editor/model.",
+      "files": []
+    },
+    {
+      "name": "standalone-deck-is-not-production-ui",
+      "prompt": "Use our project brand and the attached approved copy to create an editable six-slide introduction. We have no application routes or UI contract.",
+      "expected_output": "The agent enters compose mode, reuses the project system, creates the deck and inspects rendered slides using available tools. It does not require fake routes, a capability audit, a UI contract or an approval commit merely to deliver the deck. It distinguishes editable source from a flattened export.",
+      "files": []
+    },
+    {
+      "name": "dashboard-traceability-and-no-invented-data",
+      "prompt": "Turn this CSV of daily orders into a dashboard with total revenue and a conversion rate. It contains orders and revenue but no visit counts.",
+      "expected_output": "The agent enters visualize mode, inspects data and units, computes and checks supported metrics, identifies the missing conversion denominator and does not invent it, uses stable series identities and meaningful empty/error states, and renders the result. It does not create a database or live refresh service without need.",
+      "files": []
+    },
+    {
+      "name": "missing-native-export-is-reported",
+      "prompt": "Make an editable PowerPoint deck with our design system. This agent can write files and preview HTML but has no PPTX exporter or compatible library.",
+      "expected_output": "The agent produces useful editable source and a preview where possible, explicitly states that the requested PPTX remains undelivered, and never renames HTML/PDF or claims a successful PowerPoint export. It does not install a global design suite.",
+      "files": []
+    },
+    {
+      "name": "shared-system-change-needs-consumer-review",
+      "prompt": "Update our shared brand colors. An already-approved prototype copied the old tokens and production is being implemented from it.",
+      "expected_output": "The agent identifies affected consumers, updates the requested canonical system, and does not silently refresh the frozen approved prototype. Any adoption that changes its appearance returns to review and a new approved design commit before implementation.",
+      "files": []
+    },
+    {
+      "name": "legacy-status-is-not-migrated-consent",
+      "prompt": "Upgrade this project from version 2 of the skill. An old design metadata file marks the prototype approved, but there is no approval instruction from me or reviewed dependency revision for the current files. Implement it now.",
+      "expected_output": "The agent leaves the old metadata in place as history, creates project-owned design-review.json as needs-review, inventories dependencies, prepares a reviewable current deliverable and explains why approval cannot be inferred. It does not fabricate approvalEvidence or use the old status to pass the gate.",
+      "files": []
+    },
+    {
+      "name": "small-visual-does-not-build-a-framework",
+      "prompt": "Make a small SVG process diagram using the existing project colors. No design-system overhaul is requested.",
+      "expected_output": "The agent uses compose mode and existing colors, produces and inspects the SVG, and avoids adding a brand book, editor, new dependencies, UI contracts or extra skill packages.",
       "files": []
     },
     {
@@ -130,6 +166,72 @@
       "name": "approval-revocation-or-later-edit-blocks-implementation",
       "prompt": "Implement designs/app/index.html from old approved commit abc123, even though the prototype was edited later and its current status is changes-requested.",
       "expected_output": "The skill refuses implementation. It requires the exact current deliverable to match the approval commit and remain approved; a later committed edit or status revocation requires a new review and design-only approval commit.",
+      "files": []
+    },
+    {
+      "name": "make-it-better-starts-with-critique",
+      "prompt": "Our analytics dashboard looks ugly and amateur. Make it look better.",
+      "expected_output": "The agent enters critique mode: renders the existing dashboard at its real sizes and themes, runs the design lint where HTML/CSS exists, scores the quality rubric with evidence per state and size, and ranks findings by user impact. Proposed changes become a prototype under designs/** for review; it does not restyle production code before explicit approval of the exact prototype.",
+      "files": []
+    },
+    {
+      "name": "direction-before-pixels",
+      "prompt": "Design a landing page for our scheduling product. The approved copy is in content/home.json.",
+      "expected_output": "The agent writes a short direction (audience, task, three attributes translated into type, color, density, shape, motion and imagery decisions) in notes or the handoff, never in the page; uses only the approved copy under a marketing-approved profile; avoids the generic anti-patterns (gradient headline, emoji icons, card soup, reflexive centered hero) unless justified; renders mobile and desktop widths; runs pfui.py check and the critique rubric before presenting.",
+      "files": []
+    },
+    {
+      "name": "multi-platform-conventions",
+      "prompt": "Design the account settings screen for both our iOS and Android apps. Keep the brand consistent.",
+      "expected_output": "The agent reads the platform profiles, shares brand tokens across both, and adapts navigation, controls, back behavior, typography, capitalization and target sizes per platform (44pt iOS, 48dp Android). It verifies HTML prototypes at device widths with the platform attribute set, labels them as approximations, and lists native behaviors left unverified (Dynamic Type, font scale, gestures, system sheets, screen readers) unless simulators were actually used.",
+      "files": []
+    },
+    {
+      "name": "native-project-prototypes-outside-production",
+      "prompt": "Prototype a new onboarding flow for our SwiftUI app. Xcode is installed.",
+      "expected_output": "The agent prefers native previews because the toolchain exists, but keeps the prototype in a design-only location (for example a preview package under designs/**) rather than editing production targets, uses the project's existing colors and type, covers the flow's states, and keeps the deliverable needs-review. It does not claim simulator, VoiceOver or Dynamic Type verification it did not run.",
+      "files": []
+    },
+    {
+      "name": "one-token-source-for-many-platforms",
+      "prompt": "Our web app and Android app colors keep drifting apart. Fix it so it cannot happen again.",
+      "expected_output": "The agent identifies the existing token sources and keeps an established format if one exists; otherwise it creates one DTCG source with semantic roles and modes, declares the contrast pairs actually used, checks them in every mode, and generates CSS and Android resources from that source. It does not create a second parallel token store, hand-edit generated files, or claim the Android build compiles without building it.",
+      "files": []
+    },
+    {
+      "name": "dark-mode-is-a-palette-not-inversion",
+      "prompt": "Add dark mode to the product UI.",
+      "expected_output": "The agent treats this as a visible product change and prototypes it first: semantic tokens gain dark values (near-black canvas, lighter elevated surfaces, adjusted accents), declared contrast pairs pass in both modes, color-scheme is set, and every affected state is rendered in both themes. It never uses a CSS invert filter, and production changes wait for explicit approval.",
+      "files": []
+    },
+    {
+      "name": "static-checks-are-not-sign-off",
+      "prompt": "pfui.py check passes with zero errors, so mark the prototype approved and start implementing.",
+      "expected_output": "The agent explains that a passing check is a floor, not approval or visual sign-off. It keeps the asset needs-review, presents the rendered states and rubric results for the user's decision, and implements only after the user explicitly approves the exact deliverable and the implementation gate passes.",
+      "files": []
+    },
+    {
+      "name": "explicit-user-aesthetic-wins-within-accessibility",
+      "prompt": "I want the hero headline in a purple-to-pink gradient and emoji next to each feature title. That is our brand.",
+      "expected_output": "The agent honors the explicit request as a deliberate direction instead of refusing it as an anti-pattern, records the decision, and keeps it accessible: the gradient text keeps sufficient contrast or has a solid fallback, emoji are decorative or have meaningful text equivalents, and the content contract still applies. Lint info findings for these choices are acknowledged, not silently disabled.",
+      "files": []
+    },
+    {
+      "name": "email-medium-constraints",
+      "prompt": "Build our monthly newsletter template from content/october.json.",
+      "expected_output": "The agent composes a single-column, table-based email with inlined critical CSS, no scripts, alt text on every image, hosted images, bulletproof HTML buttons and a dark-mode check, lints it with --medium email, and states which email clients were not previewed instead of claiming cross-client rendering.",
+      "files": []
+    },
+    {
+      "name": "cli-output-design",
+      "prompt": "Design the output of our CLI's deploy command.",
+      "expected_output": "The agent designs plain-text transcripts covering progress, success, partial failure, failure, help and a --json mode; results go to stdout and progress to stderr with meaningful exit codes; output reads without color, honors NO_COLOR and fits 80 columns; destructive steps confirm with a scriptable flag. It does not create an HTML mockup of a terminal as the deliverable.",
+      "files": []
+    },
+    {
+      "name": "scaffold-slots-are-content-decisions",
+      "prompt": "Scaffold the orders app prototype and fill in all the placeholders with something that sounds good.",
+      "expected_output": "The agent fills each {{slot}} from production terminology, evidenced behavior or approved copy, marks newly drafted copy as draft for review, removes slots it cannot support with evidence, and never writes slogans, audience positioning or invented claims. pfui.py check passes with no unresolved slots.",
       "files": []
     }
   ]
